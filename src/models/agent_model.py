@@ -16,7 +16,7 @@ class Player(Agent):
         self.room = room
         self.person_card = person
 
-    def updateKnowledge(self):
+    def updateKnowledge(self, smart_player = False):
         pass
 
 
