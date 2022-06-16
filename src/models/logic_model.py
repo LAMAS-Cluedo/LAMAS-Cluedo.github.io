@@ -4,7 +4,7 @@ from mlsolver.formula import *
 from cluedoClasses import SolAtom, AgentCard, CluedoWorld
 
 def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
-  print(type, nextAgent, dealt)
+  print(type, nextAgent)
 
   if len(dealt) == len(weapons) + len(people) + len(rooms):
     assignment = {}
@@ -18,8 +18,10 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
     
     if nextAgent < 0:
       for weapon in weapons:
+        weapons.remove(weapon)
         dealt.append(SolAtom('w', weapon))
         worlds += buildWorlds(weapons, people, rooms, agents, 'p', -1, dealt)
+        insort(weapons, weapon)
         dealt.pop()
       return worlds
 
@@ -29,14 +31,17 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         dealt.append(AgentCard('w', weapon, nextAgent))
         worlds += buildWorlds(weapons, people, rooms, agents, 'p', (nextAgent + 1) % len(agents), dealt)
         insort(weapons, weapon)
+        dealt.pop()
       return worlds
 
   if type == 'p':
 
     if nextAgent < 0:
       for person in people:
+        people.remove(person)
         dealt.append(SolAtom('p', person))
         worlds += buildWorlds(weapons, people, rooms, agents, 'r', -1, dealt)
+        insort(people, person)
         dealt.pop()
       return worlds
 
@@ -46,14 +51,17 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         dealt.append(AgentCard('p', person, nextAgent))
         worlds += buildWorlds(weapons, people, rooms, agents, 'r', (nextAgent + 1) % len(agents), dealt)
         insort(people, person)
+        dealt.pop()
       return worlds
       
   if type == 'r':
 
     if nextAgent < 0:
       for room in rooms:
+        rooms.remove(room)
         dealt.append(SolAtom('r', room))
         worlds += buildWorlds(weapons, people, rooms, agents, 'w', 0, dealt)
+        insort(rooms, room)
         dealt.pop()
       return worlds
 
@@ -63,17 +71,17 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         dealt.append(AgentCard('r', room, nextAgent))
         worlds += buildWorlds(weapons, people, rooms, agents, 'w', (nextAgent + 1) % len(agents), dealt)
         insort(rooms, room)
+        dealt.pop()
       return worlds
 
 # from agent_model import Player
 
-n_agents = 3
-agents = ['a','b','c']
-n_weapons = 2
+agents = ['a','b']
+n_weapons = 3
 weapons = list(range(0, n_weapons))
-n_people = 2
+n_people = 3
 people = list(range(0, n_people))
-n_rooms = 2
+n_rooms = 3
 rooms = list(range(0, n_rooms))
 
 worlds = buildWorlds(weapons, people, rooms, agents, 'w', -1, [])
