@@ -4,9 +4,9 @@ from mlsolver.formula import *
 from cluedoClasses import SolAtom, AgentCard, CluedoWorld
 
 def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
-  print(type, nextAgent)
+  #print(type, nextAgent)
 
-  if len(dealt) == len(weapons) + len(people) + len(rooms):
+  if len(weapons) + len(people) + len(rooms) == 0:
     assignment = {}
     for i_atom in range(0, len(dealt)):
       assignment[str(dealt[i_atom])] = True;
@@ -70,13 +70,14 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         rooms.remove(room)
         dealt.append(AgentCard('r', room, nextAgent))
         worlds += buildWorlds(weapons, people, rooms, agents, 'w', (nextAgent + 1) % len(agents), dealt)
+        #print(worlds)
         insort(rooms, room)
         dealt.pop()
       return worlds
 
 # from agent_model import Player
 
-agents = ['a','b']
+agents = ['a','b', 'c']
 n_weapons = 3
 weapons = list(range(0, n_weapons))
 n_people = 3
@@ -86,6 +87,7 @@ rooms = list(range(0, n_rooms))
 
 worlds = buildWorlds(weapons, people, rooms, agents, 'w', -1, [])
 print(worlds)
+print(len(worlds))
 
 # agent = Player(1, 75)
 # agent.setAtributes(2, 7, 5)
