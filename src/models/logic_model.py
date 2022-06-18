@@ -4,9 +4,7 @@ from mlsolver.formula import *
 from cluedoClasses import SolAtom, AgentCard, CluedoWorld
 
 def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
-  print(type, nextAgent)
-
-  if len(dealt) == len(weapons) + len(people) + len(rooms):
+  if 0 == len(weapons) + len(people) + len(rooms):
     assignment = {}
     for i_atom in range(0, len(dealt)):
       assignment[str(dealt[i_atom])] = True;
