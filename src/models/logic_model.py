@@ -114,7 +114,7 @@ def loadStructure(ks_name):
 
 def saveStructure(kripke_structure, ks_name):
   print('~~~\nSaving Kripke Structure with name: ' + ks_name + '\n~~~')
-  
+
   filename = 'src/models/saved_models/' + ks_name
   with open(filename, 'wb') as modelFile:
     pickle.dump(kripke_structure, modelFile)
@@ -141,5 +141,5 @@ def initializeKripke(agents = ['a','b','c'], n_weapons=3, n_people=3, n_rooms=3)
 
   kripke_structure = KripkeStructure(worlds, relations)
   saveStructure(kripke_structure, ks_name)
-
+  
   return kripke_structure
