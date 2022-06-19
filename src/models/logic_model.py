@@ -1,4 +1,6 @@
+import pickle
 from bisect import insort
+from functools import reduce
 from mlsolver.kripke import *
 from mlsolver.formula import *
 from cluedoClasses import SolAtom, AgentCard, CluedoWorld
@@ -8,7 +10,8 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
     assignment = {}
     for i_atom in range(0, len(dealt)):
       assignment[str(dealt[i_atom])] = True;
-    return [World(str(CluedoWorld(dealt)), assignment)]
+    world = World(str(CluedoWorld(dealt)), assignment)
+    return [world]
 
   worlds = []
 
@@ -24,10 +27,15 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
       return worlds
 
     else:
+      if len(weapons) == 1:
+        nextType = 'p'
+      else:
+        nextType = 'w'
+
       for weapon in weapons:
         weapons.remove(weapon)
-        dealt.append(AgentCard('w', weapon, nextAgent))
-        worlds += buildWorlds(weapons, people, rooms, agents, 'p', (nextAgent + 1) % len(agents), dealt)
+        dealt.append(AgentCard('w', weapon, agents[nextAgent]))
+        worlds += buildWorlds(weapons, people, rooms, agents, nextType, (nextAgent + 1) % len(agents), dealt)
         insort(weapons, weapon)
         dealt.pop()
       return worlds
@@ -44,10 +52,15 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
       return worlds
 
     else:
+      if len(people) == 1:
+        nextType = 'r'
+      else:
+        nextType = 'p'
+
       for person in people:
         people.remove(person)
-        dealt.append(AgentCard('p', person, nextAgent))
-        worlds += buildWorlds(weapons, people, rooms, agents, 'r', (nextAgent + 1) % len(agents), dealt)
+        dealt.append(AgentCard('p', person, agents[nextAgent]))
+        worlds += buildWorlds(weapons, people, rooms, agents, nextType, (nextAgent + 1) % len(agents), dealt)
         insort(people, person)
         dealt.pop()
       return worlds
@@ -64,28 +77,44 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
       return worlds
 
     else:
+      if len(people) == 1:
+        nextType = 'w'
+      else:
+        nextType = 'r'
+
       for room in rooms:
         rooms.remove(room)
-        dealt.append(AgentCard('r', room, nextAgent))
-        worlds += buildWorlds(weapons, people, rooms, agents, 'w', (nextAgent + 1) % len(agents), dealt)
-        #print(worlds)
+        dealt.append(AgentCard('r', room, agents[nextAgent]))
+        worlds += buildWorlds(weapons, people, rooms, agents, nextType, (nextAgent + 1) % len(agents), dealt)
         insort(rooms, room)
         dealt.pop()
       return worlds
 
+def isPossWorld(world, possWorld, agent):
+  for atom in world.assignment.keys():
+    if atom[:-2] == agent:
+      if atom[-2:] in possWorld.assignment.keys():
+        return False
+  return True
+
+def buildRelationsFromWorld(world, worlds, agent):
+  return [(world, possWorld) for possWorld in worlds if isPossWorld(world, possWorld, agent)]
+
 # from agent_model import Player
 
-agents = ['a','b', 'c']
-n_weapons = 3
+agents = ['a','b','c']
+n_weapons = 4
 weapons = list(range(0, n_weapons))
-n_people = 3
+n_people = 4
 people = list(range(0, n_people))
-n_rooms = 3
+n_rooms = 4
 rooms = list(range(0, n_rooms))
 
 worlds = buildWorlds(weapons, people, rooms, agents, 'w', -1, [])
-print(worlds)
-print(len(worlds))
+
+relations = {}
+for agent in agents:
+  relations[agent] = reduce(lambda it, world: it + buildRelationsFromWorld(world, worlds, agent), worlds, [])
 
 # agent = Player(1, 75)
 # agent.setAtributes(2, 7, 5)
@@ -94,6 +123,9 @@ print(len(worlds))
 
 # print(agent.weapon)
 
-# ks = KripkeStructure(worlds, relations)
-# print(len(ks.worlds))
-# print(ks.solve(And(And(Atom('w1'),Atom('p1')),Atom('r1'))))
+ks = KripkeStructure(worlds, relations)
+
+filename = 'saved_models/CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl';
+
+with open(filename, 'wb') as modelFile:
+  pickle.dump(ks, modelFile);

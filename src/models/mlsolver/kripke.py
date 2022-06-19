@@ -33,6 +33,25 @@ class KripkeStructure:
             if ks.nodes_not_follow_formula(formula) == []:
                 return ks
 
+    # https://github.com/JohnRoyale/MAS2018
+    def solve_a(self, agent, formula):
+        nodes_to_remove = self.nodes_not_follow_formula(formula)
+
+        if len(nodes_to_remove) == 0:
+            return self
+
+        relations_to_remove = []
+
+        for relation in self.relations[str(agent)]:
+            for node in nodes_to_remove:
+                if node in relation:
+                    relations_to_remove.append(relation)
+                    break
+
+        self.relations[str(agent)] = self.relations[str(agent)].difference(set(relations_to_remove))
+
+        return self
+
     def remove_node_by_name(self, node_name):
         """Removes ONE node of Kripke frame, therefore we can make knowledge
         base consistent with announcement.
@@ -75,6 +94,24 @@ class KripkeStructure:
             if not formula.semantic(self, nodes.name):
                 nodes_not_follow_formula.append(nodes.name)
         return nodes_not_follow_formula
+
+    # https://github.com/JohnRoyale/MAS2018
+    def print(self):
+        print("Worlds: ")
+        print("=======================")
+
+        for w in self.worlds:
+            print(w.name)
+
+        print()
+        print("Relations: ")
+        print("=======================")
+        for rs in self.relations:
+            print(rs, ": ")
+            for r in self.relations[rs]:
+                print(r)
+
+        print()
 
     def __eq__(self, other):
         """Returns true iff two Kripke structures are equivalent
@@ -122,4 +159,6 @@ class World:
         return self.name == other.name and self.assignment == other.assignment
 
     def __str__(self):
-        return "(" + self.name + ',' + str(self.assignment) + ')'
+        return self.name
+    def __repr__(self):
+        return self.name

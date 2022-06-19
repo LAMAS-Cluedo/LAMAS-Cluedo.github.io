@@ -16,7 +16,7 @@ class AgentCard(SolAtom):
         self.agent = agent
     
     def __str__(self):
-        return str(self.agent) + str(super())
+        return str(self.agent) + str(self.type) + str(self.number)
         
     def equalTo(self, type, number, agent):
         return self.type == type and self.number == number and self.agent == agent
@@ -28,5 +28,5 @@ class CluedoWorld():
     def __str__(self):
         name = ''
         for atom in self.atoms:
-            name += str(atom)
-        return name
+            name += str(atom) + ' '
+        return name[:-1]
