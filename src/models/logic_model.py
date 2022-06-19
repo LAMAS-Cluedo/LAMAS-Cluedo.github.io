@@ -1,10 +1,12 @@
 import pickle
+from os import listdir
 from bisect import insort
 from functools import reduce
 from tqdm import tqdm
-from mlsolver.kripke import *
-from mlsolver.formula import *
-from cluedoClasses import SolAtom, AgentCard, CluedoWorld
+from models.mlsolver.kripke import *
+from models.mlsolver.formula import *
+from models.cluedoClasses import SolAtom, AgentCard, CluedoWorld
+
 
 def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
   if 0 == len(weapons) + len(people) + len(rooms):
@@ -91,6 +93,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         dealt.pop()
       return worlds
 
+
 def isPossWorld(world, possWorld, agent):
   for atom in world.assignment.keys():
     if atom[:-2] == agent:
@@ -102,35 +105,41 @@ def isPossWorld(world, possWorld, agent):
 def buildRelationsFromWorld(world, worlds, agent):
   return [(world, possWorld) for possWorld in worlds if isPossWorld(world, possWorld, agent)]
 
-#from agent_model import Player
+def loadStructure(ks_name):
+  print("~~~\nLoading " + ks_name + '\n~~~')
 
-agents = ['a','b','c']
-n_weapons = 3
-weapons = list(range(0, n_weapons))
-n_people = 3
-people = list(range(0, n_people))
-n_rooms = 3
-rooms = list(range(0, n_rooms))
+  with open('src/models/saved_models/' + ks_name, 'rb') as modelFile:
+    kripke_structure = pickle.load(modelFile)
+  return kripke_structure
 
-worlds = buildWorlds(weapons, people, rooms, agents, 'w', -1, [])
 
-relations = {}
-for agent in tqdm(agents):
-  relations[agent] = []
-  for world in tqdm(worlds):
-    relations[agent] += buildRelationsFromWorld(world, worlds, agent)
+def saveStructure(kripke_structure, ks_name):
+  print('~~~\nSaving Kripke Structure with name: ' + ks_name + '\n~~~')
+  filename = 'src/models/saved_models/' + ks_name
+  with open(filename, 'wb') as modelFile:
+    pickle.dump(kripke_structure, modelFile)
 
-#agent = Player(1, 75)
-#print(agent)
-# agent.setAtributes(2, 7, 5)
-# agent.weapon = 5
-# agent.askPlayer(1, "weapon")
 
-# print(agent.weapon)
+def initializeKripke(agents = ['a','b','c'], n_weapons=3, n_people=3, n_rooms=3):
+  ks_name ='CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl'
 
-ks = KripkeStructure(worlds, relations)
+  for model in listdir('src/models/saved_models/'):
+    if model == ks_name:
+      return loadStructure(ks_name)
 
-filename = 'src/models/saved_models/CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl';
+  weapons = list(range(0, n_weapons))
+  people = list(range(0, n_people))
+  rooms = list(range(0, n_rooms))
 
-with open(filename, 'wb') as modelFile:
-  pickle.dump(ks, modelFile);
+  worlds = buildWorlds(weapons, people, rooms, agents, 'w', -1, [])
+
+  relations = {}
+  for agent in tqdm(agents):
+    relations[agent] = []
+    for world in tqdm(worlds):
+      relations[agent] += buildRelationsFromWorld(world, worlds, agent)
+
+  kripke_structure = KripkeStructure(worlds, relations)
+  saveStructure(kripke_structure, ks_name)
+
+  return kripke_structure

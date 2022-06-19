@@ -1,9 +1,30 @@
 import pickle
-from mlsolver.kripke import *
-from mlsolver.formula import *
-from cluedoClasses import SolAtom, AgentCard, CluedoWorld
+from models.logic_model import initializeKripke
+from models.mlsolver.kripke import *
+from models.mlsolver.formula import *
+from models.cluedoClasses import SolAtom, AgentCard, CluedoWorld
 
-with open('saved_models/CluedoModel_a=3_w=3_p=3_r=4.pkl', 'rb') as modelFile:
-    model = pickle.load(modelFile)
+agents = ['a','b','c']
+n_weapons = 3
+n_people = 3
+n_rooms = 3
 
-print(len(model.worlds))
+
+kripke_structure = initializeKripke(
+    agents=agents,
+    n_weapons=n_weapons,
+    n_people=n_people,
+    n_rooms=n_rooms
+    )
+
+
+print(len(kripke_structure.worlds))
+
+
+#agent = Player(1, 75)
+#print(agent)
+# agent.setAtributes(2, 7, 5)
+# agent.weapon = 5
+# agent.askPlayer(1, "weapon")
+
+# print(agent.weapon)
