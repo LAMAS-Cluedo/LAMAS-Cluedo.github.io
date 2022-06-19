@@ -25,4 +25,4 @@ class Player(Agent):
         self.updateKnowledge()
 
     def __repr__(self):
-        return "Player " + str(self.unique_id)
+        return str(self.unique_id)

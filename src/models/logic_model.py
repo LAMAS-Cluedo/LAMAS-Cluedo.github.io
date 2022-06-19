@@ -102,14 +102,14 @@ def isPossWorld(world, possWorld, agent):
 def buildRelationsFromWorld(world, worlds, agent):
   return [(world, possWorld) for possWorld in worlds if isPossWorld(world, possWorld, agent)]
 
-# from agent_model import Player
+#from agent_model import Player
 
 agents = ['a','b','c']
-n_weapons = 4
+n_weapons = 3
 weapons = list(range(0, n_weapons))
-n_people = 4
+n_people = 3
 people = list(range(0, n_people))
-n_rooms = 4
+n_rooms = 3
 rooms = list(range(0, n_rooms))
 
 worlds = buildWorlds(weapons, people, rooms, agents, 'w', -1, [])
@@ -120,7 +120,8 @@ for agent in tqdm(agents):
   for world in tqdm(worlds):
     relations[agent] += buildRelationsFromWorld(world, worlds, agent)
 
-# agent = Player(1, 75)
+#agent = Player(1, 75)
+#print(agent)
 # agent.setAtributes(2, 7, 5)
 # agent.weapon = 5
 # agent.askPlayer(1, "weapon")
@@ -129,7 +130,7 @@ for agent in tqdm(agents):
 
 ks = KripkeStructure(worlds, relations)
 
-filename = 'saved_models/CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl';
+filename = 'src/models/saved_models/CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl';
 
 with open(filename, 'wb') as modelFile:
   pickle.dump(ks, modelFile);
