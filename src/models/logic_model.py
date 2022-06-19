@@ -1,6 +1,5 @@
 import pickle
 from bisect import insort
-from functools import reduce
 from tqdm import tqdm
 from mlsolver.kripke import *
 from mlsolver.formula import *
@@ -102,14 +101,12 @@ def isPossWorld(world, possWorld, agent):
 def buildRelationsFromWorld(world, worlds, agent):
   return [(world, possWorld) for possWorld in worlds if isPossWorld(world, possWorld, agent)]
 
-# from agent_model import Player
-
 agents = ['a','b','c']
-n_weapons = 4
+n_weapons = 3
 weapons = list(range(0, n_weapons))
-n_people = 4
+n_people = 3
 people = list(range(0, n_people))
-n_rooms = 4
+n_rooms = 3
 rooms = list(range(0, n_rooms))
 
 worlds = buildWorlds(weapons, people, rooms, agents, 'w', -1, [])
@@ -119,13 +116,6 @@ for agent in tqdm(agents):
   relations[agent] = []
   for world in tqdm(worlds):
     relations[agent] += buildRelationsFromWorld(world, worlds, agent)
-
-# agent = Player(1, 75)
-# agent.setAtributes(2, 7, 5)
-# agent.weapon = 5
-# agent.askPlayer(1, "weapon")
-
-# print(agent.weapon)
 
 ks = KripkeStructure(worlds, relations)
 
