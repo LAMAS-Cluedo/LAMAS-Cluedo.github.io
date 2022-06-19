@@ -1,7 +1,6 @@
 import pickle
 from os import listdir
 from bisect import insort
-from functools import reduce
 from tqdm import tqdm
 from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
@@ -19,7 +18,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
   worlds = []
 
   if type == 'w':
-    
+
     if nextAgent < 0:
       for weapon in weapons:
         weapons.remove(weapon)
@@ -67,7 +66,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         insort(people, person)
         dealt.pop()
       return worlds
-      
+
   if type == 'r':
 
     if nextAgent < 0:
