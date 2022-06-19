@@ -4,8 +4,7 @@ from bisect import insort
 from tqdm import tqdm
 from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
-from models.cluedoClasses import SolAtom, AgentCard, CluedoWorld
-
+from models.cluedo import *
 
 def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
   if 0 == len(weapons) + len(people) + len(rooms):
@@ -120,7 +119,8 @@ def saveStructure(kripke_structure, ks_name):
     pickle.dump(kripke_structure, modelFile)
 
 
-def initializeKripke(agents = ['a','b','c'], n_weapons=3, n_people=3, n_rooms=3):
+def initializeKripke(agents = 3, n_weapons=3, n_people=3, n_rooms=3):
+  agents = listAgents(agents)
   ks_name ='CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl'
 
   for model in listdir('src/models/saved_models/'):
