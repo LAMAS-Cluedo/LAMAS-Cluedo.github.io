@@ -1,6 +1,7 @@
 import pickle
 from bisect import insort
 from functools import reduce
+from tqdm import tqdm
 from mlsolver.kripke import *
 from mlsolver.formula import *
 from cluedoClasses import SolAtom, AgentCard, CluedoWorld
@@ -93,8 +94,9 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
 def isPossWorld(world, possWorld, agent):
   for atom in world.assignment.keys():
     if atom[:-2] == agent:
-      if atom[-2:] in possWorld.assignment.keys():
-        return False
+      for possAtom in possWorld.assignment.keys():
+        if possAtom[:-2] != agent and possAtom[-2:] == atom[-2:]:
+          return False
   return True
 
 def buildRelationsFromWorld(world, worlds, agent):
@@ -113,8 +115,10 @@ rooms = list(range(0, n_rooms))
 worlds = buildWorlds(weapons, people, rooms, agents, 'w', -1, [])
 
 relations = {}
-for agent in agents:
-  relations[agent] = reduce(lambda it, world: it + buildRelationsFromWorld(world, worlds, agent), worlds, [])
+for agent in tqdm(agents):
+  relations[agent] = []
+  for world in tqdm(worlds):
+    relations[agent] += buildRelationsFromWorld(world, worlds, agent)
 
 # agent = Player(1, 75)
 # agent.setAtributes(2, 7, 5)
