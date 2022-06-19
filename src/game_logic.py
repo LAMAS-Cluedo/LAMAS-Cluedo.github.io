@@ -5,9 +5,9 @@ from models.mlsolver.formula import *
 from models.cluedoClasses import SolAtom, AgentCard, CluedoWorld
 
 agents = ['a','b','c']
-n_weapons = 3
-n_people = 3
-n_rooms = 3
+n_weapons = 4
+n_people = 4
+n_rooms = 4
 
 
 kripke_structure = initializeKripke(
