@@ -2,9 +2,9 @@ import pickle
 from models.logic_model import initializeKripke
 from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
-from models.cluedoClasses import SolAtom, AgentCard, CluedoWorld
+from models.cluedo import *
 
-agents = ['a','b','c']
+agents = 3
 n_weapons = 4
 n_people = 4
 n_rooms = 4
@@ -19,7 +19,8 @@ kripke_structure = initializeKripke(
 
 
 print(len(kripke_structure.worlds))
-
+for agent in listAgents(agents):
+    print(agent + ':', len(kripke_structure.relations[agent]))
 
 #agent = Player(1, 75)
 #print(agent)

@@ -30,3 +30,6 @@ class CluedoWorld():
         for atom in self.atoms:
             name += str(atom) + ' '
         return name[:-1]
+
+def listAgents(n_agents):
+    return [chr(agent) for agent in list(range(97, 97+n_agents))]
