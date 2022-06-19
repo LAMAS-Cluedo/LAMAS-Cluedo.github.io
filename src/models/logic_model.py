@@ -119,7 +119,7 @@ for agent in tqdm(agents):
 
 ks = KripkeStructure(worlds, relations)
 
-filename = 'saved_models/CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl';
+filename = 'src/models/saved_models/CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl';
 
 with open(filename, 'wb') as modelFile:
   pickle.dump(ks, modelFile);
