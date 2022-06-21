@@ -11,7 +11,7 @@ class CluedoGameModel(Model):
     def __init__(self: Model, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> Model:
         self.schedule = RandomActivation(self)
         self.ks = []
-        self.target_cards = []
+        self.target_cards = {}
         
         for agent_name in names_agents:
             agent = Player(agent_name, self)
@@ -26,7 +26,12 @@ class CluedoGameModel(Model):
     
 
     def setCardsOnTable(self: Model, weapon: int, person: int, room: int):
-        self.target_cards = [weapon, person, room]
+        if self.target_cards:
+            print("Cards already set")
+        else:    
+            self.target_cards['weapon'] = weapon
+            self.target_cards['person'] = person
+            self.target_cards['room'] = room
 
 
     def initializeLogicStructure(self: Model, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> KripkeStructure:

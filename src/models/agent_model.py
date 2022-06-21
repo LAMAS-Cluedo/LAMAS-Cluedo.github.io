@@ -9,15 +9,15 @@ class Player(Agent):
         self.knowledge_base = {}
         self.weapons = []
         self.rooms = []
-        self.personCards = []
+        self.people = []
 
-    def setAtributes(self: Agent, weapon: int = None, room: int = None, person: int = None) -> None:
+    def setAtributes(self: Agent, weapon: int = None, person: int = None, room: int = None) -> None:
         if weapon != None:
             self.weapons.append(weapon)
         if room != None:
             self.rooms.append(room)
         if person != None:
-            self.personCards.append(person)
+            self.people.append(person)
 
     def updateKnowledge(self: Agent, smart_player: bool = False):
         pass
