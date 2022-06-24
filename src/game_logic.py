@@ -1,6 +1,8 @@
 import pickle
 import random
 from itertools import cycle
+
+import pygame
 from models.logic_model import initializeKripke
 from models.game_model import CluedoGameModel
 from models.mlsolver.kripke import *
@@ -12,11 +14,23 @@ n_weapons = 3
 n_people = 3
 n_rooms = 3
 
-weapons = list(range(0, n_weapons))
-people = list(range(0, n_people))
-rooms = list(range(0, n_rooms))
 
-model = CluedoGameModel(agents, n_weapons, n_people, n_rooms)
+    
+
+def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> CluedoGameModel:
+    model = CluedoGameModel(agents, n_weapons, n_people, n_rooms)
+    model.dealCards(n_weapons, n_people, n_rooms)
+    return model
+
+def runGame(model):
+    quit = False
+    while not quit:
+        pygame.display.update()
+        model.mouse['l_down'] = -1
+        model.mouse['l_up'] = -1
+        model.key = None
+        # so the model doesn't get stuck
+        #pygame.quit()
 
 # After this point the kripke structure, model and agents are initialized, but the agents do not have cards in thier hands
 
@@ -28,40 +42,39 @@ model = CluedoGameModel(agents, n_weapons, n_people, n_rooms)
     )"""
 
 
-# TODO: find a way to update the hands of each agent so that they stay in line with the relations in the kripke structure
+# TODO: (DONE) find a way to update the hands of each agent so that they stay in line with the relations in the kripke structure
 # an agents hand is updated using model.schedule.agent[i].setAtributes(weapon, person, room), i is the number of the agent so: a -> 0 and so on
 # Not all atributes have to be given in the function setAtributes().
 
-weapon = random.choice(weapons)
-person = random.choice(people)
-room = random.choice(rooms)
-model.setCardsOnTable(weapon, person, room)
-weapons.remove(weapon)
-people.remove(person)
-rooms.remove(room)
 
-for agent in cycle(model.schedule.agents):
-    if weapons:
-        weapon = random.choice(weapons)
-        agent.setAtributes(weapon=weapon)
-        weapons.remove(weapon)
-    elif people:
-        person = random.choice(people)
-        agent.setAtributes(person=person)
-        people.remove(person)
-    elif rooms:
-        room = random.choice(rooms)
-        agent.setAtributes(room=room)
-        rooms.remove(room)
-    else:
-        break
-
-
+model = initializeGame(['a','b','c'], 3, 3, 3)
+# TODO: Make mouse inputs work, at the moment the game doesn't work properly, 
+# it has to be shut down by force, to see results in terminal and not game interface 
+# comment out runGame(Model) 
+runGame(model)
 for i in range(len(model.schedule.agents)):
     print(model.schedule.agents[i].weapons, model.schedule.agents[i].people, model.schedule.agents[i].rooms)
 
+
+
 print(model.target_cards)
 print(len(model.ks.worlds))
+
+
+print(model.schedule.agents[0].knowledge_base)
+#Used to see all worlds without the first item in the knowledge base
+f=[]
+for agent in model.schedule.agents:
+    formula= Atom(agent.knowledge_base[0])
+    for atom in agent.knowledge_base[1:]:
+        formula = Or(formula, Atom(atom))
+    f.append(formula)
+nodes = model.ks.nodes_not_follow_formula(f[0])
+print(nodes)
+print(len(nodes))
+
+
+
 #agent = Player(1, 75)
 #print(agent)
 # agent.setAtributes(2, 7, 5)

@@ -11,7 +11,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
   if 0 == len(weapons) + len(people) + len(rooms):
     assignment = {}
     for i_atom in range(0, len(dealt)):
-      assignment[str(dealt[i_atom])] = True;
+      assignment[str(dealt[i_atom])] = True
     world = World(str(CluedoWorld(dealt)), assignment)
     return [world]
 
