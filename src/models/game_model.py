@@ -140,14 +140,14 @@ class CluedoGameModel(Model):
         pygame.mouse.set_visible
         self.mouse = {'l_down': -1, 'l_up': -1, 'pos': (0,0)}
 
+        self.dim_img = 300
         self.game_img = pygame.transform.scale(
             pygame.image.load('./img/cluedoBoard.jpeg'),
-            (600, 600)
+            (self.dim_img, self.dim_img)
             )
-        self.dim_img = 600
         
-        self.display = pygame.display.set_mode((1080,1080))
-        self.dim_display = 1080
+        self.dim_display = 720
+        self.display = pygame.display.set_mode((self.dim_display, self.dim_display))
         pygame.display.set_caption('Cluedo')
 
         self.createZones()
