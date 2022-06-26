@@ -1,15 +1,20 @@
+from ast import Str
 import pygame
 from pygame.locals import Rect
 import random
 
 from mesa import Model
 from mesa.time import RandomActivation
+from tqdm import tqdm
 from models.agent_model import Player
 
+from tqdm import tqdm
 from itertools import cycle
+from models.cluedo import AgentCard, Question
 
 from models.logic_model import initializeKripke
 from models.mlsolver.kripke import KripkeStructure
+from models.mlsolver.formula import *
 
 
 class CluedoGameModel(Model):
@@ -19,7 +24,7 @@ class CluedoGameModel(Model):
         self.schedule = RandomActivation(self)
         self.ks = []
         self.target_cards = {}
-        self.font = pygame.font.SysFont(None, 40)
+        # self.font = pygame.font.SysFont(None, 40)
         
         for agent_name in names_agents:
             agent = Player(agent_name, self)
@@ -127,14 +132,14 @@ class CluedoGameModel(Model):
         pygame.draw.rect(self.display, color_edge, self.zone_playButton, 2)
         pygame.draw.rect(self.display, color_edge, self.zone_nextButton, 2)
 
-        self.display.blit(
-            self.font.render("Play", True, [0,0,0]), 
-            ((self.zone_playButton.x + (self.zone_playButton.w/2) - 20), (self.zone_playButton.y + (self.zone_playButton.h/2) - 20))
-        )
-        self.display.blit(
-            self.font.render("Next", True, [0,0,0]), 
-            ((self.zone_nextButton.x + (self.zone_nextButton.w/2) - 20), (self.zone_nextButton.y + (self.zone_nextButton.h/2) - 20))
-        )
+        # self.display.blit(
+        #     self.font.render("Play", True, [0,0,0]), 
+        #     ((self.zone_playButton.x + (self.zone_playButton.w/2) - 20), (self.zone_playButton.y + (self.zone_playButton.h/2) - 20))
+        # )
+        # self.display.blit(
+        #     self.font.render("Next", True, [0,0,0]), 
+        #     ((self.zone_nextButton.x + (self.zone_nextButton.w/2) - 20), (self.zone_nextButton.y + (self.zone_nextButton.h/2) - 20))
+        # )
 
     def initializeDisplay(self: Model):
         pygame.mouse.set_visible
@@ -152,3 +157,11 @@ class CluedoGameModel(Model):
 
         self.createZones()
         self.drawInterface()
+
+    def agentSaysNo(self: Model, agent: str, question: Question) -> None:
+        for world in tqdm(self.ks.worlds):
+            keys = world.assignment.keys()
+            if (str(AgentCard('w', question.weapon, agent)) in keys or 
+                    str(AgentCard('p', question.person, agent)) in keys or
+                    str(AgentCard('r', question.room, agent)) in keys):
+                self.ks.remove_node_by_name(world.name)
