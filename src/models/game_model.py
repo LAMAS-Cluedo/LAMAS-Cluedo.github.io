@@ -135,14 +135,14 @@ class CluedoGameModel(Model):
         pygame.draw.rect(self.display, color_edge, self.zone_playButton, 2)
         pygame.draw.rect(self.display, color_edge, self.zone_nextButton, 2)
 
-        # self.display.blit(
-        #     self.font.render("Play", True, [0,0,0]), 
-        #     ((self.zone_playButton.x + (self.zone_playButton.w/2) - 20), (self.zone_playButton.y + (self.zone_playButton.h/2) - 20))
-        # )
-        # self.display.blit(
-        #     self.font.render("Next", True, [0,0,0]), 
-        #     ((self.zone_nextButton.x + (self.zone_nextButton.w/2) - 20), (self.zone_nextButton.y + (self.zone_nextButton.h/2) - 20))
-        # )
+        self.display.blit(
+            self.font.render("Play", True, [0,0,0]), 
+            ((self.zone_playButton.x + (self.zone_playButton.w/2) - 20), (self.zone_playButton.y + (self.zone_playButton.h/2) - 20))
+        )
+        self.display.blit(
+            self.font.render("Next", True, [0,0,0]), 
+            ((self.zone_nextButton.x + (self.zone_nextButton.w/2) - 20), (self.zone_nextButton.y + (self.zone_nextButton.h/2) - 20))
+        )
 
     def initializeDisplay(self: Model):
         pygame.mouse.set_visible

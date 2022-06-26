@@ -58,7 +58,7 @@ model = initializeGame(agents, n_weapons, n_people, n_rooms)
 # TODO: Make mouse inputs work, at the moment the game doesn't work properly, 
 # it has to be shut down by force, to see results in terminal and not game interface 
 # comment out runGame(Model) 
-# runGame(model)
+runGame(model)
 for i in range(len(model.schedule.agents)):
     print(model.schedule.agents[i].weapons, model.schedule.agents[i].people, model.schedule.agents[i].rooms)
 
