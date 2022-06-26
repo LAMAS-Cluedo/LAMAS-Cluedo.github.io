@@ -24,13 +24,14 @@ class AgentCard(SolAtom):
 
 
 class AgentShownChoice():
-    def __init__(self, type, number, agent):
+    def __init__(self, type, number, agentFrom, agentTo):
         self.type = type
         self.number = number
-        self.agent = agent
+        self.agentFrom = agentFrom
+        self.agentTo = agentTo
     
     def __str__(self):
-        return 'c_' + str(self.agent) + str(self.type) + str(self.number)
+        return 'c_' + str(self.agentFrom) + str(self.type) + str(self.number) + '_' + str(self.agentTo)
         
     def equalTo(self, type, number, agent):
         return self.type == type and self.number == number and self.agent == agent
@@ -60,6 +61,14 @@ class Question():
         self.person = person
         self.room = room
 
+    def wAtom(self):
+        return 'w' + str(self.weapon);
+
+    def pAtom(self):
+        return 'p' + str(self.person);
+
+    def rAtom(self):
+        return 'r' + str(self.room);
 
 def listAgents(n_agents):
     return [chr(agent) for agent in list(range(97, 97+n_agents))]

@@ -10,7 +10,7 @@ from models.agent_model import Player
 
 from tqdm import tqdm
 from itertools import cycle
-from models.cluedo import AgentCard, Question
+from models.cluedo import AgentCard, AgentShownChoice, Question
 
 from models.logic_model import initializeKripke
 from models.mlsolver.kripke import KripkeStructure
@@ -22,7 +22,7 @@ class CluedoGameModel(Model):
     def __init__(self: Model, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> Model:
         pygame.init()
         self.schedule = RandomActivation(self)
-        self.ks = []
+        self.ks = None
         self.target_cards = {}
         # self.font = pygame.font.SysFont(None, 40)
         
@@ -165,3 +165,33 @@ class CluedoGameModel(Model):
                     str(AgentCard('p', question.person, agent)) in keys or
                     str(AgentCard('r', question.room, agent)) in keys):
                 self.ks.remove_node_by_name(world.name)
+
+    def agentShownPossibleWorld(agent, shownAtom, possibleWorld):
+        for possAtom in possibleWorld.assignment.keys():
+            if possAtom[:-2] != agent and possAtom[-2:] == shownAtom:
+                return False
+        return True
+
+    def agentResponds(self: Model, agent: str, question: Question) -> None:
+        for world in tqdm(self.ks.worlds):
+            agents = self.ks.relations.keys()
+                
+            cardsToShow = []
+            atoms = world.assignment.keys()
+            for atom in atoms:
+                if atom == agent + question.wAtom():
+                    cardsToShow.append(question.wAtom())
+                if atom == agent + question.pAtom():
+                    cardsToShow.append(question.pAtom())
+                if atom == agent + question.rAtom():
+                    cardsToShow.append(question.rAtom())
+
+            
+            newRelation = []
+            
+            if len(cardsToShow) == 0:
+                self.ks.remove_node_by_name(world.name)
+                
+            elif len(cardsToShow) == 1:
+                for (worldFrom, worldTo) in self.ks.relations[agent]:
+                    continue

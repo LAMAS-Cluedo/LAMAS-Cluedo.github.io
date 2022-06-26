@@ -67,9 +67,11 @@ class KripkeStructure:
 
         if isinstance(self.relations, dict):
             for key, value in self.relations.items():
-                for (start_node, end_node) in value.copy():
-                    if start_node == node_name or end_node == node_name:
-                        value.remove((start_node, end_node))
+                newRelation = []
+                for (start_node, end_node) in value:
+                    if start_node != node_name and end_node != node_name:
+                        newRelation.append((start_node, end_node))
+                self.relations[key] = newRelation
 
     def get_power_set_of_worlds(self):
         """Returns a list with all possible sub sets of world names, sorted
