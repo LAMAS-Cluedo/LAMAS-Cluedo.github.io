@@ -1,5 +1,8 @@
+import sys
+import time
+
 import pygame
-from pygame.locals import Rect
+from pygame.locals import *
 import random
 
 from mesa import Model
@@ -20,6 +23,8 @@ class CluedoGameModel(Model):
         self.ks = []
         self.target_cards = {}
         self.font = pygame.font.SysFont(None, 40)
+        self.gameInProgress = False
+        self.movesHistory = []
         
         for agent_name in names_agents:
             agent = Player(agent_name, self)
@@ -82,13 +87,13 @@ class CluedoGameModel(Model):
             )
 
     def createZones(self: Model) -> None:
-        self.zone_knowledge = Rect(
+        self.zone_gameProgress = Rect(
             self.dim_img, 
             0, 
             self.dim_display - self.dim_img, 
             self.dim_img
         )
-        self.zone_gameProgress = Rect(
+        self.zone_knowledge = Rect(
             0, 
             self.dim_img, 
             self.dim_display, 
@@ -138,9 +143,9 @@ class CluedoGameModel(Model):
 
     def initializeDisplay(self: Model):
         pygame.mouse.set_visible
-        self.mouse = {'l_down': -1, 'l_up': -1, 'pos': (0,0)}
+        self.mouse = {'click': -1, 'coordinates': (0,0)}
 
-        self.dim_img = 300
+        self.dim_img = 360
         self.game_img = pygame.transform.scale(
             pygame.image.load('./img/cluedoBoard.jpeg'),
             (self.dim_img, self.dim_img)
@@ -152,3 +157,46 @@ class CluedoGameModel(Model):
 
         self.createZones()
         self.drawInterface()
+
+
+    def checkZone(self: Model, zone: Rect) -> bool:
+        if (self.mouse['click'] == 1) and \
+            (
+                (zone.x <= self.mouse['coordinates'][0] <= zone.x + zone.w) and \
+                (zone.y <= self.mouse['coordinates'][1] <= zone.y + zone.h)
+            ):
+            return True
+        else:
+            return False
+
+    def clickCheck(self: Model) -> bool:
+        if self.checkZone(self.zone_playButton) and not self.gameInProgress:
+            self.gameInProgress = True
+            self.display.blit(
+            self.font.render("'The Game starts now!'", True, [0,0,0]), 
+            ((self.zone_gameProgress.x + (self.zone_gameProgress.w/2) - 20), (self.zone_gameProgress.y + (self.zone_gameProgress.h/2) - 20))
+            )
+            print('The Game starts now!')
+            return True
+        if self.checkZone(self.zone_nextButton) and self.gameInProgress:
+            print('Next move!')
+            return True
+
+
+# TODO: change this function
+    def parse_events(self, event_handle):
+        # Handle input events
+        for event in event_handle:
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            else:
+                try:
+                    self.mouse['coordinates'] = event.dict['pos']
+                except:
+                    self.mouse['coordinates'] = (0,0)
+                if event.type == MOUSEBUTTONDOWN:
+                    if event.dict['button'] == 1:
+                        self.mouse['click'] = 1
+                elif event.type == MOUSEBUTTONUP:
+                    pass
