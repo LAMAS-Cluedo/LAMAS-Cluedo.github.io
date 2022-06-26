@@ -10,7 +10,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
   if 0 == len(weapons) + len(people) + len(rooms):
     assignment = {}
     for i_atom in range(0, len(dealt)):
-      assignment[str(dealt[i_atom])] = True;
+      assignment[str(dealt[i_atom])] = True
     world = World(str(CluedoWorld(dealt)), assignment)
     return [world]
 
@@ -113,7 +113,7 @@ def loadStructure(ks_name):
 
 def saveStructure(kripke_structure, ks_name):
   print('~~~\nSaving Kripke Structure with name: ' + ks_name + '\n~~~')
-  
+
   filename = 'src/models/saved_models/' + ks_name
   with open(filename, 'wb') as modelFile:
     pickle.dump(kripke_structure, modelFile)
@@ -141,5 +141,5 @@ def initializeKripke(agents = 3, n_weapons=3, n_people=3, n_rooms=3):
 
   kripke_structure = KripkeStructure(worlds, relations)
   saveStructure(kripke_structure, ks_name)
-
+  
   return kripke_structure
