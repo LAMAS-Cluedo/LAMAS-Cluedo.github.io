@@ -95,12 +95,12 @@ http://www.templatemo.com/tm-514-magazee
             <h2 class="tm-text-color-white mb-4">The Idea</h2>
             <p class="mb-4 tm-text-color-white"> Create a Cluedo simulator, where the user can see the knowledge
               (Kripke) model of the current state of the game. As the game progresses, the Kripke model will be updated
-              accordingly. The game is played between AI agents.
+              accordingly. Below is a roadmap of our progress.
             </p>
             <h2 class="tm-text-color-white mb-4">Simplifications</h2>
             <p class="mb-4 tm-text-color-white"> Our game will not include movement between rooms and there is no
-              restrictions on the questions that an agent can ask on their turn. The game is played with fewer cards
-              (weapons, rooms & agents) to reduce the number of Kripke worlds.
+              restrictions on the questions that an agent can ask on their turn. We will also allow the game to include
+              variable number of cards/agents as we will implement the quantities dynamically.
             </p>
           </div>
         </div>
@@ -113,47 +113,22 @@ http://www.templatemo.com/tm-514-magazee
       <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
         <div class="tm-flex-center p-5 tm-bg-color-white">
           <div class="tm-md-flex-center">
-            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Requirements</h2>
-            <h4 class="tm-text-color-primary mb-4" , style="text-align:center">Must have</h4>
-            <p class="mb-4">
-            <ul>
-              <li><u>Cluedo implementation</u>: The main requirement of this project is that implementation of the game
-                Cluedo (rules, cards etc.). The simplifications mentioned above are made, to limit the number of
-                possible worlds.</li>
-              <li><u>AI agents</u>: Another core requirement is the implementation of AI agents that can interact with
-                the game. The agents should at least be able to play randomly/without a strategy</li>
-              <li><u>Knowledge Model</u>: A Kripke Model should be created representing the knowledge of each agent with
-                regards to the location of the cards (cards in the centre & cards in the agents’ hands)</li>
-            </ul>
+            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Roadmap</h2>
+            <p class="mb-4"> 1.Kripke Model where the user inputs all game events as they know
+              them (agent 1 asked x and agent 2 answered with ‘yes’ (and showed a card)). The Kripke model will be
+              updated according to those events (if an input is impossible based on the model, the event is rejected).
+              The mode is updated depending on 2 different inference-capacities: The first inference-capacity is to only
+              consider information directly told to the user, such as what is in the user’s hand/what is shown to them.
+              The 2nd inference-capacity involves higher order knowledge, where what other agents know/what they say
+              about their knowledge is also considered when updating the Kripke model.
             </p>
-            <h4 class="tm-text-color-primary mb-4" , style="text-align:center">Should have</h4>
             <p class="mb-4">
-            <ul>
-              <li><u>Step button</u>: The user should be able to interact with the simulation through a ‘step’ button
-                that
-                progresses the game by 1 step</li>
-              <li><u>1st & 2nd order knowledge</u>: Depending on the order of knowledge, agents can adapt the Kripke
-                model
-                differently (2nd order knowledge agents can infer more). This is explained later in more detail</li>
-              <li><u>Metrics</u>: After each simulation, it should be possible to see how the knowledge of each agent
-                progresses through the game (in terms of number of worlds) and which agent won</li>
-            </ul>
+              2. Implementation of agents. Agents will use a random playing strategy to decide what their actions are
+              (instead of the user inputing the events they see). The inferences are done in the same way as in the 1st
+              stage. This results in a playable game against AI agents.
             </p>
-            <h4 class="tm-text-color-primary mb-4" , style="text-align:center">Could have</h4>
             <p class="mb-4">
-            <ul>
-              <li><u>Kripke model access</u>: An extension of the game is for the user to be able to access the Kripke
-                model
-                during the game (e.g. through queries)</li>
-              <li><u>UI</u>: A visual user interface could allow the user to more easily interact with the programme,
-                allowing them to access more information at the same time</li>
-              <li><u>Automatic simulations</u>: It is useful to offer the possibility for the user to run a number of
-                simulations/complete games automatically, exporting the results at the end</li>
-              <li><u>User as a player</u>: Offering the possibility to the user to also participate in the game could be
-                a fun extension of the software</li>
-              <li><u>Guessing Agents</u>: It could be interesting for an agent to take a guess when they have a high
-                certainty (e.g. 50% chance that their guess is right). This increases the realism of the simulation</li>
-            </ul>
+              3. More complex strategies for the agents might be implemented later. The rest remains the same.
             </p>
           </div>
         </div>
@@ -164,9 +139,8 @@ http://www.templatemo.com/tm-514-magazee
     <section class="row tm-section tm-col-md-reverse">
       <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
         <div class="tm-flex-center p-5 tm-bg-color-primary">
-          <div class="tm-md-flex-center tm-text-color-white">
+          <div class="tm-md-flex-center tm-text-color-white" , style="text-align:center">
             <h1>The Logic Implementation</h1>
-            <h3 style="text-align:center">The Model, agents & inference</h3>
           </div>
         </div>
       </div>
@@ -241,9 +215,9 @@ http://www.templatemo.com/tm-514-magazee
         <p class="text-center small tm-copyright-text mb-0">
           LAMAS Group 13 | Designed by <a href="http://templatemo.com" class="tm-text-color-gray"
             target="_parent">Template Mo</a></p>
-        <p class="text-center small-text mb-0">
-          <a href="oldVersion.html" class="tm-text-color-gray" target="_parent">Older Version </a>
-        </p>
+            <p class="text-center small-text mb-0">
+          <a href="index.html" class="tm-text-color-gray"
+            target="_parent">New Version </a></p>
       </div>
     </div>
   </div>
