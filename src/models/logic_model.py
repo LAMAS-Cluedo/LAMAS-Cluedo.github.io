@@ -6,6 +6,7 @@ from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
 from models.cluedo import *
 
+
 def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
   if 0 == len(weapons) + len(people) + len(rooms):
     assignment = {}
@@ -95,13 +96,18 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
 def isPossWorld(world, possWorld, agent):
   for atom in world.assignment.keys():
     if atom[:-2] == agent:
-      for possAtom in possWorld.assignment.keys():
+      possAtoms = possWorld.assignment.keys()
+      if atom not in possAtoms:
+        return False
+      for possAtom in possAtoms:
         if possAtom[:-2] != agent and possAtom[-2:] == atom[-2:]:
           return False
   return True
 
+
 def buildRelationsFromWorld(world, worlds, agent):
-  return [(world, possWorld) for possWorld in worlds if isPossWorld(world, possWorld, agent)]
+  return [(world.name, possWorld.name) for possWorld in worlds if isPossWorld(world, possWorld, agent)]
+
 
 def loadStructure(ks_name):
   print("~~~\nLoading " + ks_name + '\n~~~')
@@ -119,8 +125,7 @@ def saveStructure(kripke_structure, ks_name):
     pickle.dump(kripke_structure, modelFile)
 
 
-def initializeKripke(agents = 3, n_weapons=3, n_people=3, n_rooms=3):
-  agents = listAgents(agents)
+def initializeKripke(agents = listAgents(3), n_weapons=3, n_people=3, n_rooms=3):
   ks_name ='CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl'
 
   for model in listdir('src/models/saved_models/'):

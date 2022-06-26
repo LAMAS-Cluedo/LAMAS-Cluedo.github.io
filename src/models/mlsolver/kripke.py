@@ -7,7 +7,7 @@ modal logic formula.
 import copy
 
 from itertools import chain, combinations
-
+from tqdm import tqdm
 
 class KripkeStructure:
     """
