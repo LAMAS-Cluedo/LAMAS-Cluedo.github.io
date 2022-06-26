@@ -2,7 +2,9 @@ import pickle
 import random
 from itertools import cycle
 
-from pygame import display
+import pygame
+from pygame.locals import USEREVENT
+
 from models.logic_model import initializeKripke
 from models.game_model import CluedoGameModel
 from models.mlsolver.kripke import *
@@ -21,16 +23,21 @@ def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: in
     model.dealCards(n_weapons, n_people, n_rooms)
     return model
 
+def nextMove(model: CluedoGameModel):
+    #model.drawNextMove()
+    pass
 
 def runGame(model):
-    quit = False
-    while not quit:
-        display.update()
-        model.mouse['l_down'] = -1
-        model.mouse['l_up'] = -1
-        model.key = None
-        # so the model doesn't get stuck
-        # pygame.quit()
+    #TICK = USEREVENT + 1
+    #pygame.time.set_timer(TICK, 1000)
+    while True:
+        buttonClicked = False
+        model.mouse['click'] = -1
+        model.parse_events(pygame.event.get())
+        buttonClicked = model.clickCheck()
+        if buttonClicked:
+            nextMove(model)
+        pygame.display.update()
 
 # After this point the kripke structure, model and agents are initialized, but the agents do not have cards in thier hands
 

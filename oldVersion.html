@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>LAMAS Cluedo (Group 13)</title>
+  <!-- 
+Magazee Template 
+http://www.templatemo.com/tm-514-magazee
+-->
+  <!-- load CSS -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400">
+  <!-- Google web font "Open Sans" -->
+  <link rel="stylesheet" href="css/bootstrap.min.css"> <!-- https://getbootstrap.com/ -->
+  <link rel="stylesheet" href="css/templatemo-style.css"> <!-- Templatemo style -->
+
+  <script>
+    var renderPage = true;
+
+    if (navigator.userAgent.indexOf('MSIE') !== -1
+      || navigator.appVersion.indexOf('Trident/') > 0) {
+      /* Microsoft Internet Explorer detected in. */
+      alert("Please view this in a modern browser such as Chrome or Microsoft Edge.");
+      renderPage = false;
+    }
+  </script>
+
+</head>
+
+<body>
+  <!-- Loader -->
+  <div id="loader-wrapper">
+    <div id="loader"></div>
+    <div class="loader-section section-left"></div>
+    <div class="loader-section section-right"></div>
+  </div>
+
+  <div class="container">
+
+    <!-- 1st section -->
+    <section class="row tm-section">
+      <div class="col-sm-12 col-sm-12 col-lg-6 col-xl-6 p-0">
+        <div class="tm-flex-center p-5 tm-bg-color-primary tm-section-min-h">
+          <h1 class="tm-text-color-white tm-site-name">Cluedo</h1>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="tm-flex-right p-5">
+          <h2 class="tm-text-color-primary mb-4">Creating a Logic Model simulating the game Cluedo</h2>
+          <p class="mb-4"><b>A Project by Group 13</b>: <br> Chris Worthington<br>Leonidas Zotos <br> Paul Pintea </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2nd section -->
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-8">
+        <div class="tm-flex-center p-5">
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-primary mb-4">The game</h2>
+            <p class="mb-4"> In the game there are three piles of cards which show six possible weapons, six possible
+              murderers, and ten possible rooms. One card from each pile is selected at random and secretly to be what
+              will be referred to as the three “correct" cards which the players will try to deduce. Then the rest of
+              the cards are randomly split between the players to give them an initial set of cards that they can
+              already consider not to be in the correct set.
+            </p>
+            <p class="mb-4"> When playing the game the players then take turns
+              “suspecting" combinations of murderers, weapons, and rooms. In response to this question each player takes
+              turns to either say if they do not have one of the cards that were suspected, or if they do, secretly show
+              that card to the suspecting player and then the turn ends. Once a player believes that they know the
+              hidden stack of cards, they can accuse that set and check for themselves if they are correct. If they are
+              wrong, they return the stack and are out of the game, otherwise they win.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4 p-0">
+        <div class="tm-flex-center p-0 tm-bg-color-primary">
+          <div class="tm-max-w-300 tm-flex-center tm-flex-col">
+            <img src="img/cluedoBoard.jpeg" alt="Image" class="img-fluid">
+            <p class="tm-text-color-white small tm-font-thin mb-0">The Cluedo Board</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 2.5nd section -->
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
+        <div class="tm-flex-center p-5 tm-bg-color-primary">
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-white mb-4">The Idea</h2>
+            <p class="mb-4 tm-text-color-white"> Create a Cluedo simulator, where the user can see the knowledge
+              (Kripke) model of the current state of the game. As the game progresses, the Kripke model will be updated
+              accordingly. Below is a roadmap of our progress.
+            </p>
+            <h2 class="tm-text-color-white mb-4">Simplifications</h2>
+            <p class="mb-4 tm-text-color-white"> Our game will not include movement between rooms and there is no
+              restrictions on the questions that an agent can ask on their turn. We will also allow the game to include
+              variable number of cards/agents as we will implement the quantities dynamically.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 3rd section -->
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
+        <div class="tm-flex-center p-5 tm-bg-color-white">
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Roadmap</h2>
+            <p class="mb-4"> 1.Kripke Model where the user inputs all game events as they know
+              them (agent 1 asked x and agent 2 answered with ‘yes’ (and showed a card)). The Kripke model will be
+              updated according to those events (if an input is impossible based on the model, the event is rejected).
+              The mode is updated depending on 2 different inference-capacities: The first inference-capacity is to only
+              consider information directly told to the user, such as what is in the user’s hand/what is shown to them.
+              The 2nd inference-capacity involves higher order knowledge, where what other agents know/what they say
+              about their knowledge is also considered when updating the Kripke model.
+            </p>
+            <p class="mb-4">
+              2. Implementation of agents. Agents will use a random playing strategy to decide what their actions are
+              (instead of the user inputing the events they see). The inferences are done in the same way as in the 1st
+              stage. This results in a playable game against AI agents.
+            </p>
+            <p class="mb-4">
+              3. More complex strategies for the agents might be implemented later. The rest remains the same.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4th section -->
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
+        <div class="tm-flex-center p-5 tm-bg-color-primary">
+          <div class="tm-md-flex-center tm-text-color-white" , style="text-align:center">
+            <h1>The Logic Implementation</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 5th section -->
+
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
+        <div class="tm-flex-center p-5 tm-bg-color-white">
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Kripke Model</h2>
+            <p class="mb-4">The model’s foundation is a Kripke model that is shared among all agents. Naturally, the two
+              main elements of the model are the worlds/states and the accessibility relations between states.<br>
+              1. Worlds/States: Each world contains a set of atomic propositions. There are two types of propositions:
+              1) Propositions describing what is in the hidden stack(e.g. “w_1” entails that weapon 1 is in the hidden
+              stack) and 2) Propositions describing what is in agents’ hands (e.g. “c_{w_1}” entails agent c has weapon
+              1)
+              <br>
+              2. Accessibility relations: As per usual, the accessibility relations model what each agent considers to
+              be a possibility. Depending on the inference-capacity of each agent, different accessibility relations are
+              removed/changed after every round.
+            </p>
+            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The inference rules</h2>
+            <p class="mb-4">
+              Will be developed later on and will be defined based on each possible event in the game.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 6th section -->
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
+        <div class="tm-flex-center p-5 tm-bg-color-primary">
+          <div class="tm-md-flex-center tm-text-color-white" , style="text-align:center">
+            <h1>The Software Implementation</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 7th section -->
+
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
+        <div class="tm-flex-center p-5 tm-bg-color-white">
+          <div class="tm-md-flex-center">
+            <p class="mb-4">We will use the MESA (for the MAS aspect) and MLSolver (for building and updating the Kripke
+              model) packages. The solve function from the MLSolver function uses a function that generates the powerset
+              of all worlds. As our model will contain a significant number of words, we need to code our own
+              implementation of the function, as using the existing one is too computational expensive for our
+              application (for more than a few worlds). As the user inputs the data, MESA will be used to track the
+              game’s state and decide what information is needed next and in the event of user input we will update the
+              kripke model through ml solver. At any point, the user will be able to query the ML solver model using
+              epistemic logic formulae.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <div class="row">
+      <div class="col-lg-12">
+        <p class="text-center small tm-copyright-text mb-0">
+          LAMAS Group 13 | Designed by <a href="http://templatemo.com" class="tm-text-color-gray"
+            target="_parent">Template Mo</a></p>
+            <p class="text-center small-text mb-0">
+          <a href="index.html" class="tm-text-color-gray"
+            target="_parent">New Version </a></p>
+      </div>
+    </div>
+  </div>
+  <!-- load JS -->
+  <script src="js/jquery-3.2.1.slim.min.js"></script> <!-- https://jquery.com/ -->
+  <script>
+
+    /* DOM is ready
+    ------------------------------------------------*/
+    $(function () {
+
+      if (renderPage) {
+        $('body').addClass('loaded');
+      }
+
+      $('.tm-current-year').text(new Date().getFullYear());  // Update year in copyright
+    });
+
+  </script>
+
+</body>
+
+</html>
