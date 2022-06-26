@@ -11,7 +11,7 @@ from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
 from models.cluedoClasses import SolAtom, AgentCard, CluedoWorld
 
-agents = ['a','b','c']
+agents = ['a','b','c', 'd']
 n_weapons = 3
 n_people = 3
 n_rooms = 3
@@ -24,6 +24,10 @@ def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: in
     model.dealCards(n_weapons, n_people, n_rooms)
     return model
 
+def nextMove(model: CluedoGameModel):
+    #model.drawNextMove()
+    pass
+
 def runGame(model):
     #TICK = USEREVENT + 1
     #pygame.time.set_timer(TICK, 1000)
@@ -32,6 +36,8 @@ def runGame(model):
         model.mouse['click'] = -1
         model.parse_events(pygame.event.get())
         buttonClicked = model.clickCheck()
+        if buttonClicked:
+            nextMove(model)
         pygame.display.update()
 
 # After this point the kripke structure, model and agents are initialized, but the agents do not have cards in thier hands

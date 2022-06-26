@@ -22,7 +22,6 @@ class CluedoGameModel(Model):
         self.schedule = RandomActivation(self)
         self.ks = []
         self.target_cards = {}
-        self.font = pygame.font.SysFont(None, 40)
         self.gameInProgress = False
         self.movesHistory = []
         
@@ -36,6 +35,7 @@ class CluedoGameModel(Model):
             n_people, 
             n_rooms
             )
+        self.font = pygame.font.SysFont(None, 40)
         self.initializeDisplay()
 
         
@@ -198,5 +198,3 @@ class CluedoGameModel(Model):
                 if event.type == MOUSEBUTTONDOWN:
                     if event.dict['button'] == 1:
                         self.mouse['click'] = 1
-                elif event.type == MOUSEBUTTONUP:
-                    pass
