@@ -95,6 +95,4 @@ model = initializeGame(agents, n_weapons, n_people, n_rooms)
 # it has to be shut down by force, to see results in terminal and not game interface 
 # comment out runGame(Model) 
 
-model.agentResponds('a', Question('b', 0, 0, 0), 1)
-
 runGame(model)
