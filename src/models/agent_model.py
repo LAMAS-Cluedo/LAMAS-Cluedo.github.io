@@ -1,5 +1,6 @@
 from typing import Any
 from mesa import Agent
+from models.cluedo import Question
 from models.mlsolver.formula import Atom, Not
 import random
 
@@ -44,6 +45,7 @@ class Player(Agent):
                     show = random.choice(cards_to_show)
                     self.updateKnowledge(show)
                     cards_showed.append('Agent ' + str(player) + ' showed card ' + show + ' to Agent ' + str(self))
+                    break
         return cards_showed
 
         #print(str(self) + " asks to see one of the " + card_type + " cards from " + str(other_player) + "'s hand")
