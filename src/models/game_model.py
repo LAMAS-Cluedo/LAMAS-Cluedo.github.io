@@ -1,4 +1,7 @@
+import enum
 import sys
+from turtle import st
+from matplotlib.pyplot import streamplot
 
 import pygame
 from pygame.locals import *
@@ -14,7 +17,7 @@ from itertools import cycle
 from models.cluedo import AgentCard, AgentShownChoice, Question
 
 from models.logic_model import initializeKripke
-from models.mlsolver.kripke import KripkeStructure
+from models.mlsolver.kripke import KripkeStructure, World
 from models.mlsolver.formula import *
 
 
@@ -199,16 +202,24 @@ class CluedoGameModel(Model):
                     str(AgentCard('r', question.room, agent)) in keys):
                 self.ks.remove_node_by_name(world.name)
 
-    def agentShownPossibleWorld(agent, shownAtom, possibleWorld):
-        for possAtom in possibleWorld.assignment.keys():
+    def agentShownPossibleWorld(self: Model, agent: str, shownAtom: str, possibleWorld: str):
+        for possAtom in possibleWorld.split():
             if possAtom[:-2] != agent and possAtom[-2:] == shownAtom:
                 return False
         return True
 
-    def agentResponds(self: Model, agent: str, question: Question) -> None:
-        for world in tqdm(self.ks.worlds):
-            agents = self.ks.relations.keys()
-                
+    def notConflictingShownCard(self: Model, worldFrom: str, worldTo: str, turn: int):
+        for atom in worldFrom.split():
+            if atom[5:] == str(turn):
+                for atom2 in worldTo.split():
+                    if atom2[5:] == str(turn) and atom2[1:2] != atom[1:2]:
+                        return False
+        return True
+
+    def agentResponds(self: Model, agent: str, question: Question, turn: int) -> None:
+        agents = self.ks.relations.keys()
+        
+        for world in tqdm(self.ks.worlds.copy()):
             cardsToShow = []
             atoms = world.assignment.keys()
             for atom in atoms:
@@ -218,16 +229,53 @@ class CluedoGameModel(Model):
                     cardsToShow.append(question.pAtom())
                 if atom == agent + question.rAtom():
                     cardsToShow.append(question.rAtom())
-
-            
-            newRelation = []
             
             if len(cardsToShow) == 0:
                 self.ks.remove_node_by_name(world.name)
                 
             elif len(cardsToShow) == 1:
-                for (worldFrom, worldTo) in self.ks.relations[agent]:
-                    continue
+                newRelation = []
+                cardToShow = cardsToShow[0]
+                for (worldFrom, worldTo) in self.ks.relations[question.agent]:
+                    if worldFrom != world.name or self.agentShownPossibleWorld(agent, cardToShow, worldTo):
+                        newRelation.append((worldFrom, worldTo))
+                self.ks.relations[question.agent] = newRelation
+            
+            else:
+                newWorlds = []
+                self.ks.worlds.remove(world)
+                for i, cardToShow in enumerate(cardsToShow):
+                    newWorlds.append(World(world.name, world.assignment))
+                    newAtom = agent + cardToShow + '_t' + str(turn)
+                    newWorlds[i].name = newWorlds[i].name + ' ' + newAtom
+                    newWorlds[i].assignment[newAtom] = True
+                    self.ks.worlds.append(newWorlds[i])
+                newRelation = {}
+                for oneAgent in agents:
+                    newRelation[oneAgent] = []
+                    if question.agent != oneAgent and agent != oneAgent:
+                        for worldFrom in newWorlds:
+                            newRelation[oneAgent] = [(worldFrom.name, worldTo.name) for worldTo in newWorlds]
+
+                    for (worldFrom, worldTo) in self.ks.relations[oneAgent]:
+                        if worldFrom == world.name:
+                            for i, cardToShow in enumerate(cardsToShow):
+                                if question.agent != oneAgent or self.agentShownPossibleWorld(agent, cardToShow, worldTo):
+                                    newRelation[oneAgent].append((newWorlds[i].name, worldTo))
+                        elif worldTo == world.name:
+                            newRelation[oneAgent].append((worldFrom, newWorlds[i].name))
+                        else:
+                            newRelation[oneAgent].append((worldFrom, worldTo))
+                
+                self.ks.relations = newRelation
+
+        newRelation = {}
+        for oneAgent in agents:
+            newRelation[oneAgent] = []
+            for (worldFrom, worldTo) in self.ks.relations[agent]:
+                if self.notConflictingShownCard(worldFrom, worldTo, turn):
+                    newRelation[oneAgent].append((worldFrom, worldTo))
+        self.ks.relations = newRelation
 
     def checkZone(self: Model, zone: Rect) -> bool:
         if (self.mouse['click'] == 1) and \

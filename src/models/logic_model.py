@@ -94,13 +94,15 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
 
 
 def isPossWorld(world, possWorld, agent):
+  print(type(agent.unique_id))
+  print(agent.unique_id)
   for atom in world.assignment.keys():
-    if atom[:-2] == agent:
+    if atom[:-2] == agent.unique_id:
       possAtoms = possWorld.assignment.keys()
       if atom not in possAtoms:
         return False
       for possAtom in possAtoms:
-        if possAtom[:-2] != agent and possAtom[-2:] == atom[-2:]:
+        if possAtom[:-2] != agent.unique_id and possAtom[-2:] == atom[-2:]:
           return False
   return True
 
@@ -140,9 +142,9 @@ def initializeKripke(agents = listAgents(3), n_weapons=3, n_people=3, n_rooms=3)
 
   relations = {}
   for agent in tqdm(agents):
-    relations[agent] = []
+    relations[agent.unique_id] = []
     for world in tqdm(worlds):
-      relations[agent] += buildRelationsFromWorld(world, worlds, agent)
+      relations[agent.unique_id] += buildRelationsFromWorld(world, worlds, agent)
 
   kripke_structure = KripkeStructure(worlds, relations)
   saveStructure(kripke_structure, ks_name)

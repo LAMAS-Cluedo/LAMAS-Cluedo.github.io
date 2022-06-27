@@ -12,11 +12,22 @@ from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
 from models.cluedo import *
 
-n_agents = int(input())
-n_weapons = int(input())
-n_people = int(input())
-n_rooms = int(input())
+n_agents = int(input('Number of players: '))
+while n_agents > 6 or n_agents < 2:
+    n_agents = int(input('Number of players (must be 2-6): '))
 agents = listAgents(n_agents)
+
+n_weapons = int(input('Number of weapons: '))
+while n_weapons > 10 or n_weapons < 1:
+    n_weapons = int(input('Number of weapons (must be 1-10): '))
+
+n_people = int(input('Number of people: '))
+while n_people > 10 or n_people < 1:
+    n_people = int(input('Number of people (must be 1-10): '))
+
+n_rooms = int(input('Number of rooms: '))
+while n_rooms > 10 or n_rooms < 1:
+    n_rooms = int(input('Number of rooms (must be 1-10): '))
 
 
 def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> CluedoGameModel:
@@ -47,7 +58,7 @@ def nextMove(model: CluedoGameModel, current_agent: Player):
 
     cards_showed = current_agent.askForCards(model.schedule.agents, cards)# needs changing
     model.movesHistory += cards_showed
-    #model.movesHistory.append('Next Move')# delete when actions implemented
+    # model.movesHistory.append('Next Move')# delete when actions implemented
     model.drawKnowledge()
     model.drawActions()
     pass
@@ -83,11 +94,7 @@ model = initializeGame(agents, n_weapons, n_people, n_rooms)
 # TODO: Make mouse inputs work, at the moment the game doesn't work properly, 
 # it has to be shut down by force, to see results in terminal and not game interface 
 # comment out runGame(Model) 
+
+model.agentResponds('a', Question('b', 0, 0, 0), 1)
+
 runGame(model)
-for i in range(len(model.schedule.agents)):
-    print(model.schedule.agents[i].weapons, model.schedule.agents[i].people, model.schedule.agents[i].rooms)
-
-model.agentSaysNo('a', Question('b', 0, 0, 0))
-
-for w in model.ks.worlds:
-    print(w.name)

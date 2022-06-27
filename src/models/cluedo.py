@@ -24,14 +24,14 @@ class AgentCard(SolAtom):
 
 
 class AgentShownChoice():
-    def __init__(self, type, number, agentFrom, agentTo):
+    def __init__(self, type, number, agent, turn):
         self.type = type
         self.number = number
-        self.agentFrom = agentFrom
-        self.agentTo = agentTo
+        self.agent = agent
+        self.turn = turn 
     
     def __str__(self):
-        return 'c_' + str(self.agentFrom) + str(self.type) + str(self.number) + '_' + str(self.agentTo)
+        return str(self.agentFrom) + str(self.type) + str(self.number) + '_t' + str(self.turn)
         
     def equalTo(self, type, number, agent):
         return self.type == type and self.number == number and self.agent == agent
