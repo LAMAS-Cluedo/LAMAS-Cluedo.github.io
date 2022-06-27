@@ -25,15 +25,28 @@ class Player(Agent):
 
     def updateKnowledge(self: Agent, card: any, smart_player: bool = False) -> None:
         if type(card) is str:
-            self.knowledge_base.append(str(self)+str(card))
+            self.knowledge_base.append(str(card))
         else:
             for item in card:
-                self.knowledge_base.append(str(self)+str(item))
+                self.knowledge_base.append(str(item))
         pass
 
 
-    def askPlayer(self: Agent, other_player: Agent, card_type: str) -> None:
-        print(str(self) + " asks to see one of the " + card_type + " cards from " + str(other_player) + "'s hand")
+    def askForCards(self: Agent, other_players, cards: list[str]) -> list[str]:
+        cards_to_show = []
+        cards_showed = []
+        for player in other_players:
+            if player != self:
+                for card in cards:
+                    if (int(card[-1]) in player.weapons) or (int(card[-1]) in player.people) or (int(card[-1]) in player.rooms):
+                        cards_to_show.append(card)
+                if cards_to_show:
+                    show = random.choice(cards_to_show)
+                    self.updateKnowledge(show)
+                    cards_showed.append('Agent ' + str(player) + ' showed card ' + show + ' to Agent ' + str(self))
+        return cards_showed
+
+        #print(str(self) + " asks to see one of the " + card_type + " cards from " + str(other_player) + "'s hand")
         #self.updateKnowledge()
 
     def __repr__(self: Agent) -> str:

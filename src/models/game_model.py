@@ -22,6 +22,9 @@ class CluedoGameModel(Model):
 
     def __init__(self: Model, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> Model:
         pygame.init()
+        self.n_weapons = n_weapons
+        self.n_people = n_people
+        self.n_rooms = n_rooms
         self.schedule = RandomActivation(self)
         self.ks = None
         self.target_cards = {}
@@ -39,6 +42,7 @@ class CluedoGameModel(Model):
             n_rooms
             )
         self.font = pygame.font.SysFont(None, 40)
+        self.fontSmall = pygame.font.SysFont(None, 20)
         self.initializeDisplay()
 
         
@@ -53,9 +57,9 @@ class CluedoGameModel(Model):
             self.target_cards['room'] = room
 
     def dealCards(self: Model, n_weapons: int, n_people: int, n_rooms: int) -> None:
-        weapons = list(range(0, n_weapons))
-        people = list(range(0, n_people))
-        rooms = list(range(0, n_rooms))
+        weapons = list(range(0, self.n_weapons))
+        people = list(range(0, self.n_people))
+        rooms = list(range(0, self.n_rooms))
         weapon = random.choice(weapons)
         person = random.choice(people)
         room = random.choice(rooms)
@@ -123,17 +127,17 @@ class CluedoGameModel(Model):
 
 
     def drawInterface(self: Model)-> None:
-        game_theme_color = [165, 205, 210]
-        color_edge = [100, 150, 150]
+        self.game_theme_color = [165, 205, 210]
+        self.color_edge = [100, 150, 150]
 
-        self.display.fill(game_theme_color)
+        self.display.fill(self.game_theme_color)
         self.display.blit(self.game_img, (0, 0))
 
-        pygame.draw.rect(self.display, color_edge, self.zone_knowledge, 2)
-        pygame.draw.rect(self.display, color_edge, self.zone_gameProgress, 2)
+        pygame.draw.rect(self.display, self.color_edge, self.zone_knowledge, 2)
+        pygame.draw.rect(self.display, self.color_edge, self.zone_gameProgress, 2)
 
-        pygame.draw.rect(self.display, color_edge, self.zone_playButton, 2)
-        pygame.draw.rect(self.display, color_edge, self.zone_nextButton, 2)
+        pygame.draw.rect(self.display, self.color_edge, self.zone_playButton, 2)
+        pygame.draw.rect(self.display, self.color_edge, self.zone_nextButton, 2)
 
         self.display.blit(
             self.font.render("Play", True, [0,0,0]), 
@@ -143,6 +147,32 @@ class CluedoGameModel(Model):
             self.font.render("Next", True, [0,0,0]), 
             ((self.zone_nextButton.x + (self.zone_nextButton.w/2) - 20), (self.zone_nextButton.y + (self.zone_nextButton.h/2) - 20))
         )
+    
+    def drawActions(self: Model):
+        self.display.fill(self.game_theme_color, self.zone_gameProgress)
+        pygame.draw.rect(self.display, self.color_edge, self.zone_knowledge, 2)
+        for i in range(len(self.movesHistory), 0, -1):
+            self.display.blit(
+                self.fontSmall.render(self.movesHistory[i-1], True, [0,0,0]), 
+                ((self.zone_gameProgress.x + 10), (self.zone_gameProgress.y + self.zone_gameProgress.h - 20 - (len(self.movesHistory)-i)*25))
+                )
+
+    def drawKnowledge(self: Model):
+        self.display.fill(self.game_theme_color, self.zone_knowledge)
+        pygame.draw.rect(self.display, self.color_edge, self.zone_knowledge, 2)
+        for i in range(len(self.schedule.agents)):
+            self.display.blit(
+                self.fontSmall.render(
+                    'Agent "' + str(self.schedule.agents[i]) + '" worlds: ' + '216', #instead of 216 function for N worlds needs to be added
+                    True, [0,0,0]), 
+                ((self.zone_knowledge.x +10), (self.zone_knowledge.y + 10 + i*25))
+                )
+            self.display.blit(
+                self.fontSmall.render(
+                    str(self.schedule.agents[i]) + ' relations: ' + 'Function for N relations',
+                    True, [0,0,0]), 
+                ((self.zone_knowledge.x + 175), (self.zone_knowledge.y + 10 + i*25))
+                )
 
     def initializeDisplay(self: Model):
         pygame.mouse.set_visible
@@ -212,11 +242,9 @@ class CluedoGameModel(Model):
     def clickCheck(self: Model) -> bool:
         if self.checkZone(self.zone_playButton) and not self.gameInProgress:
             self.gameInProgress = True
-            self.display.blit(
-            self.font.render("'The Game starts now!'", True, [0,0,0]), 
-            ((self.zone_gameProgress.x + (self.zone_gameProgress.w/2) - 20), (self.zone_gameProgress.y + (self.zone_gameProgress.h/2) - 20))
-            )
             print('The Game starts now!')
+            self.movesHistory.append('Game Initialized')
+            self.movesHistory.append('Cards dealt')
             return True
         if self.checkZone(self.zone_nextButton) and self.gameInProgress:
             print('Next move!')

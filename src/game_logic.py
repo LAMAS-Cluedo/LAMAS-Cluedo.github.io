@@ -4,6 +4,7 @@ from itertools import cycle
 
 import pygame
 from pygame.locals import USEREVENT
+from models.agent_model import Player
 
 from models.logic_model import initializeKripke
 from models.game_model import CluedoGameModel
@@ -23,8 +24,32 @@ def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: in
     model.dealCards(n_weapons, n_people, n_rooms)
     return model
 
-def nextMove(model: CluedoGameModel):
-    #model.drawNextMove()
+def nextMove(model: CluedoGameModel, current_agent: Player):
+    
+    # right now the cards the agent asks for are based on random choosing (this might not be correct)
+    # TODO: update cards selection based on knowledge in case it is needed
+    try:
+        weapon = random.choice(list(range(0, model.n_weapons)).remove(int(current_agent.weapons[-1])))
+    except (TypeError, IndexError):
+        weapon = random.choice(list(range(0, model.n_weapons)))
+    try:    
+        person = random.choice(list(range(0, model.n_people)).remove(int(current_agent.people[-1])))
+    except (TypeError, IndexError):
+        person = random.choice(list(range(0, model.n_people)))
+    try:
+        room = random.choice(list(range(0, model.n_rooms)).remove(int(current_agent.rooms[-1])))
+    except (TypeError, IndexError):
+        room = random.choice(list(range(0, model.n_rooms)))
+    cards = ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
+    
+    model.movesHistory.append('Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
+    model.drawActions()
+
+    cards_showed = current_agent.askForCards(model.schedule.agents, cards)# needs changing
+    model.movesHistory += cards_showed
+    #model.movesHistory.append('Next Move')# delete when actions implemented
+    model.drawKnowledge()
+    model.drawActions()
     pass
 
 def runGame(model):
@@ -36,7 +61,7 @@ def runGame(model):
         model.parse_events(pygame.event.get())
         buttonClicked = model.clickCheck()
         if buttonClicked:
-            nextMove(model)
+            nextMove(model, model.schedule.agents[0])#needs changing
         pygame.display.update()
 
 # After this point the kripke structure, model and agents are initialized, but the agents do not have cards in thier hands
