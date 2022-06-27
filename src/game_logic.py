@@ -12,22 +12,46 @@ from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
 from models.cluedo import *
 
-n_agents = int(input('Number of players: '))
+try:
+    n_agents = int(input('Number of players: '))
+except:
+    print('invalid input')
 while n_agents > 6 or n_agents < 2:
-    n_agents = int(input('Number of players (must be 2-6): '))
+    try:
+        n_agents = int(input('Number of players (must be 2-6): '))
+    except:
+        print('invalid input')
 agents = listAgents(n_agents)
 
-n_weapons = int(input('Number of weapons: '))
+try:
+    n_weapons = int(input('Number of weapons: '))
+except:
+    print('invalid input')
 while n_weapons > 10 or n_weapons < 1:
-    n_weapons = int(input('Number of weapons (must be 1-10): '))
+    try:
+        n_weapons = int(input('Number of weapons (must be 1-10): '))
+    except:
+        print('invalid input')
 
-n_people = int(input('Number of people: '))
+try:
+    n_people = int(input('Number of people: '))
+except:
+    print('invalid input')
 while n_people > 10 or n_people < 1:
-    n_people = int(input('Number of people (must be 1-10): '))
+    try:
+        n_people = int(input('Number of people (must be 1-10): '))
+    except:
+        print('invalid input')
 
-n_rooms = int(input('Number of rooms: '))
+try:
+    n_rooms = int(input('Number of rooms: '))
+except:
+    print('invalid input')
 while n_rooms > 10 or n_rooms < 1:
-    n_rooms = int(input('Number of rooms (must be 1-10): '))
+    try:
+        n_rooms = int(input('Number of rooms (must be 1-10): '))
+    except:
+        print('invalid input')
 
 
 def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> CluedoGameModel:
