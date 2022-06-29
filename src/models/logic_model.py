@@ -94,8 +94,6 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
 
 
 def isPossWorld(world, possWorld, agent):
-  print(type(agent.unique_id))
-  print(agent.unique_id)
   for atom in world.assignment.keys():
     if atom[:-2] == agent.unique_id:
       possAtoms = possWorld.assignment.keys()

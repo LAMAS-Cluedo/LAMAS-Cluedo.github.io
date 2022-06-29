@@ -59,6 +59,7 @@ class KripkeStructure:
         for world in self.worlds.copy():
             if node_name == world.name:
                 self.worlds.remove(world)
+                break
 
         if isinstance(self.relations, set):
             for (start_node, end_node) in self.relations.copy():

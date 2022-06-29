@@ -12,10 +12,7 @@ from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
 from models.cluedo import *
 
-try:
-    n_agents = int(input('Number of players: '))
-except:
-    print('invalid input')
+n_agents = 0
 while n_agents > 6 or n_agents < 2:
     try:
         n_agents = int(input('Number of players (must be 2-6): '))
@@ -23,30 +20,21 @@ while n_agents > 6 or n_agents < 2:
         print('invalid input')
 agents = listAgents(n_agents)
 
-try:
-    n_weapons = int(input('Number of weapons: '))
-except:
-    print('invalid input')
+n_weapons = 0
 while n_weapons > 10 or n_weapons < 1:
     try:
         n_weapons = int(input('Number of weapons (must be 1-10): '))
     except:
         print('invalid input')
 
-try:
-    n_people = int(input('Number of people: '))
-except:
-    print('invalid input')
+n_people = 0
 while n_people > 10 or n_people < 1:
     try:
         n_people = int(input('Number of people (must be 1-10): '))
     except:
         print('invalid input')
 
-try:
-    n_rooms = int(input('Number of rooms: '))
-except:
-    print('invalid input')
+n_rooms = 0
 while n_rooms > 10 or n_rooms < 1:
     try:
         n_rooms = int(input('Number of rooms (must be 1-10): '))
@@ -77,15 +65,39 @@ def nextMove(model: CluedoGameModel, current_agent: Player):
         room = random.choice(list(range(0, model.n_rooms)))
     cards = ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
     
-    model.movesHistory.append('Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
+    model.movesHistory.append('Turn ' + str(model.turn) + ': Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
     model.drawActions()
 
-    cards_showed = current_agent.askForCards(model.schedule.agents, cards)# needs changing
+    cards_showed = askForCards(current_agent, model.schedule.agents, cards, model)
+    if (len(cards_showed) == 0):
+        model.movesHistory.append('No agents responded')
     model.movesHistory += cards_showed
     # model.movesHistory.append('Next Move')# delete when actions implemented
     model.drawKnowledge()
     model.drawActions()
     pass
+
+def askForCards(agent: Player, other_players, cards: list[str], model: CluedoGameModel) -> list[str]:
+        question = Question(str(agent), int(cards[0][-1]), int(cards[1][-1]), int(cards[2][-1]))
+        cards_showed = []
+        for i_player in range(0, len(other_players)-1):
+            player = other_players[(model.turn+1+i_player)%len(other_players)]
+            cards_to_show = []
+            if player != agent:
+                for card in cards:
+                    if ((int(card[-1]) in player.weapons) and card[0] == 'w') or \
+                         ((int(card[-1]) in player.people) and card[0] == 'p') or \
+                              ((int(card[-1]) in player.rooms) and card[0] == 'r'):
+                        cards_to_show.append(card)
+                if cards_to_show:
+                    show = random.choice(cards_to_show)
+                    agent.updateKnowledge(show)
+                    model.agentResponds(str(player), question, model.turn)
+                    cards_showed.append('Agent ' + str(player) + ' showed card ' + show + ' to Agent ' + str(agent))
+                    break
+                else:
+                    model.agentSaysNo(player, question)
+        return cards_showed
 
 def runGame(model):
     #TICK = USEREVENT + 1
@@ -96,7 +108,8 @@ def runGame(model):
         model.parse_events(pygame.event.get())
         buttonClicked = model.clickCheck()
         if buttonClicked:
-            nextMove(model, model.schedule.agents[0])#needs changing
+            model.turn += 1
+            nextMove(model, model.schedule.agents[model.turn % len(model.schedule.agents)])
         pygame.display.update()
 
 # After this point the kripke structure, model and agents are initialized, but the agents do not have cards in thier hands

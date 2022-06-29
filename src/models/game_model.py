@@ -33,6 +33,7 @@ class CluedoGameModel(Model):
         self.target_cards = {}
         self.gameInProgress = False
         self.movesHistory = []
+        self.turn = -1
         
         for agent_name in names_agents:
             agent = Player(agent_name, self)
@@ -48,8 +49,6 @@ class CluedoGameModel(Model):
         self.fontSmall = pygame.font.SysFont(None, 20)
         self.initializeDisplay()
 
-        
-    
 
     def setCardsOnTable(self: Model, weapon: int, person: int, room: int) -> None:
         if self.target_cards:
@@ -163,18 +162,34 @@ class CluedoGameModel(Model):
     def drawKnowledge(self: Model):
         self.display.fill(self.game_theme_color, self.zone_knowledge)
         pygame.draw.rect(self.display, self.color_edge, self.zone_knowledge, 2)
+        self.display.blit(
+            self.fontSmall.render(
+                'Knowledge cards not on table:',
+                True, [0,0,0]), 
+            ((self.zone_knowledge.w/2 +10), (self.zone_knowledge.y + 10))
+            )
         for i in range(len(self.schedule.agents)):
             self.display.blit(
                 self.fontSmall.render(
-                    'Agent "' + str(self.schedule.agents[i]) + '" worlds: ' + '216', #instead of 216 function for N worlds needs to be added
+                    'Agent "' + str(self.schedule.agents[i]) + '" worlds: ' + str(len(self.ks.worlds)),
                     True, [0,0,0]), 
                 ((self.zone_knowledge.x +10), (self.zone_knowledge.y + 10 + i*25))
                 )
             self.display.blit(
                 self.fontSmall.render(
-                    str(self.schedule.agents[i]) + ' relations: ' + 'Function for N relations',
+                    str(self.schedule.agents[i]) + ': ' + 'Function for ' + str(len(self.ks.relations[str(self.schedule.agents[i])])) + ' relations',
                     True, [0,0,0]), 
                 ((self.zone_knowledge.x + 175), (self.zone_knowledge.y + 10 + i*25))
+                )
+            for_print = ''
+            for card in self.schedule.agents[i].knowledge_base:
+                if card not in for_print:
+                    for_print += (card + ', ')
+            self.display.blit(
+                self.fontSmall.render(
+                    str(self.schedule.agents[i]) + ': ' + for_print[:-1],
+                    True, [0,0,0]), 
+                ((self.zone_knowledge.w/2 + 10), (self.zone_knowledge.y + 10 + (i+1)*25))
                 )
 
     def initializeDisplay(self: Model):
@@ -269,13 +284,13 @@ class CluedoGameModel(Model):
                 
                 self.ks.relations = newRelation
 
-        newRelation = {}
-        for oneAgent in agents:
-            newRelation[oneAgent] = []
-            for (worldFrom, worldTo) in self.ks.relations[agent]:
-                if self.notConflictingShownCard(worldFrom, worldTo, turn):
-                    newRelation[oneAgent].append((worldFrom, worldTo))
-        self.ks.relations = newRelation
+                # newRelation = {}
+                # for oneAgent in agents:
+                #     newRelation[oneAgent] = []
+                #     for (worldFrom, worldTo) in self.ks.relations[oneAgent]:
+                #         if self.notConflictingShownCard(worldFrom, worldTo, turn):
+                #             newRelation[oneAgent].append((worldFrom, worldTo))
+                # self.ks.relations = newRelation
 
     def checkZone(self: Model, zone: Rect) -> bool:
         if (self.mouse['click'] == 1) and \
