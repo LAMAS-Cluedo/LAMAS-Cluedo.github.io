@@ -28,7 +28,7 @@ class CluedoGameModel(Model):
         self.n_weapons = n_weapons
         self.n_people = n_people
         self.n_rooms = n_rooms
-        self.schedule = RandomActivation(self)
+        self.agents = []
         self.ks = None
         self.target_cards = {}
         self.gameInProgress = False
@@ -37,10 +37,10 @@ class CluedoGameModel(Model):
         
         for agent_name in names_agents:
             agent = Player(agent_name, self)
-            self.schedule.add(agent)
+            self.agents.append(agent)
 
         self.initializeLogicStructure(
-            self.schedule.agents, 
+            self.agents, 
             n_weapons, 
             n_people, 
             n_rooms
@@ -70,7 +70,7 @@ class CluedoGameModel(Model):
         people.remove(person)
         rooms.remove(room)
 
-        for agent in cycle(self.schedule.agents):
+        for agent in cycle(self.agents):
             if weapons:
                 weapon = random.choice(weapons)
                 agent.setAtributes(weapon=weapon)
@@ -180,26 +180,26 @@ class CluedoGameModel(Model):
                 True, [0,0,0]), 
             ((self.zone_knowledge.w/2 +10), (self.zone_knowledge.y + 10))
             )
-        for i in range(len(self.schedule.agents)):
+        for i in range(len(self.agents)):
             self.display.blit(
                 self.fontSmall.render(
-                    'Agent "' + str(self.schedule.agents[i]) + '" worlds: ' + str(len(self.ks.worlds)),
+                    'Agent "' + str(self.agents[i]) + '" worlds: ' + str(len(self.ks.worlds)),
                     True, [0,0,0]), 
                 ((self.zone_knowledge.x +10), (self.zone_knowledge.y + 10 + i*25))
                 )
             self.display.blit(
                 self.fontSmall.render(
-                    str(self.schedule.agents[i]) + ': ' + 'Function for ' + str(len(self.ks.relations[str(self.schedule.agents[i])])) + ' relations',
+                    str(self.agents[i]) + ': ' + 'Function for ' + str(len(self.ks.relations[str(self.agents[i])])) + ' relations',
                     True, [0,0,0]), 
                 ((self.zone_knowledge.x + 175), (self.zone_knowledge.y + 10 + i*25))
                 )
             for_print = ''
-            for card in self.schedule.agents[i].knowledge_base:
+            for card in self.agents[i].knowledge_base:
                 if card not in for_print:
                     for_print += (card + ', ')
             self.display.blit(
                 self.fontSmall.render(
-                    str(self.schedule.agents[i]) + ': ' + for_print[:-1],
+                    str(self.agents[i]) + ': ' + for_print[:-1],
                     True, [0,0,0]), 
                 ((self.zone_knowledge.w/2 + 10), (self.zone_knowledge.y + 10 + (i+1)*25))
                 )
@@ -345,10 +345,10 @@ class CluedoGameModel(Model):
                 # self.ks.relations = newRelation
 
     def removeAgent(self: Model, remove_agent: str):
-        for agent in self.schedule.agents:
+        for agent in self.agents:
             if str(agent) == remove_agent:
-                self.schedule.agents.remove(agent)
-                for a1 in self.schedule.agents:
+                self.agents.remove(agent)
+                for a1 in self.agents:
                     print(str(a1))
 
     def checkGameOver(self: Model, agent: str, weapon: str, person: str, room: str):

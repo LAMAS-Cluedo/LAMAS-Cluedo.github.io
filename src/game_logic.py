@@ -67,7 +67,7 @@ def nextMove(model: CluedoGameModel, current_agent: Player):
 
     if model.turn > -1:
         model.movesHistory.append('Turn ' + str(model.turn) + ': Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
-        cards_showed = askForCards(current_agent, model.schedule.agents, cards, model)
+        cards_showed = askForCards(current_agent, model.agents, cards, model)
         if (len(cards_showed) == 0):
             model.movesHistory.append('No agents responded')
         model.movesHistory += cards_showed
@@ -109,9 +109,9 @@ def runGame(model):
         model.checkInterfaceAction(pygame.event.get())
         buttonClicked = model.clickCheck()
         if buttonClicked:
-            #model.checkGameOver('a', 'w' + str(model.target_cards['weapon']), 'p' + str(model.target_cards['person']), 'r' + str(model.target_cards['room']))
+            #model.checkGameOver('a', 's' + str(model.target_cards['weapon']), 'p' + str(model.target_cards['person']), 'r' + str(model.target_cards['room']))
             if model.gameInProgress != -1:
-                nextMove(model, model.schedule.agents[model.turn % len(model.schedule.agents)])
+                nextMove(model, model.agents[model.turn % len(model.agents)])
                 model.turn += 1
         pygame.display.update()
 
