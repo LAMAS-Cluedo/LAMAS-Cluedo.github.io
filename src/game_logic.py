@@ -1,9 +1,14 @@
+from email.mime import base
 import pickle
 import random
 from itertools import cycle
+from turtle import pos
+from black import Set
+from numpy import true_divide
 
 import pygame
 from pygame.locals import USEREVENT
+from pyparsing import null_debug_action
 from models.agent_model import Player
 
 from models.logic_model import initializeKripke
@@ -16,41 +21,60 @@ n_agents = 0
 while n_agents > 6 or n_agents < 2:
     try:
         n_agents = int(input('Number of players (must be 2-6): '))
-    except:
+    except ValueError:
         print('invalid input')
 agents = listAgents(n_agents)
+
+n_high_order = -1
+while n_high_order > n_agents or n_high_order < 0:
+    try:
+        n_high_order = int(input('Number of players using high order knowledge: '))
+        if n_high_order > n_agents:
+            print('Number cannot be higher than the number of players')
+        if n_high_order < 0:
+            print('Number cannot be negative')
+    except ValueError:
+        print('invalid input')
 
 n_weapons = 0
 while n_weapons > 10 or n_weapons < 1:
     try:
         n_weapons = int(input('Number of weapons (must be 1-10): '))
-    except:
+    except ValueError:
         print('invalid input')
 
 n_people = 0
 while n_people > 10 or n_people < 1:
     try:
         n_people = int(input('Number of people (must be 1-10): '))
-    except:
+    except ValueError:
         print('invalid input')
 
 n_rooms = 0
 while n_rooms > 10 or n_rooms < 1:
     try:
         n_rooms = int(input('Number of rooms (must be 1-10): '))
-    except:
+    except ValueError:
         print('invalid input')
 
+base_on_knowledge = None
+while base_on_knowledge != 'y' and base_on_knowledge != 'n':
+    try:
+        base_on_knowledge = input("Base questions on agent's knowledge? (respond with y/n): ")
+    except ValueError:
+        print('invalid input')
+if base_on_knowledge == 'y':
+    base_on_knowledge = True
+else:
+    base_on_knowledge = False
+    print('Questions will be chosen randomly')
 
-def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> CluedoGameModel:
-    model = CluedoGameModel(agents, n_weapons, n_people, n_rooms)
+def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: int, n_high_order: int) -> CluedoGameModel:
+    model = CluedoGameModel(agents, n_weapons, n_people, n_rooms, n_high_order)
     model.dealCards(n_weapons, n_people, n_rooms)
     return model
 
-def nextMove(model: CluedoGameModel, current_agent: Player):
-    
-    # right now the cards the agent asks for are based on random choosing (this might not be correct)
-    # TODO: update cards selection based on knowledge in case it is needed
+def decideRandomQuestion(model: CluedoGameModel, current_agent: Player) -> list:
     try:
         weapon = random.choice(list(range(0, model.n_weapons)).remove(int(current_agent.weapons[-1])))
     except (TypeError, IndexError):
@@ -63,7 +87,30 @@ def nextMove(model: CluedoGameModel, current_agent: Player):
         room = random.choice(list(range(0, model.n_rooms)).remove(int(current_agent.rooms[-1])))
     except (TypeError, IndexError):
         room = random.choice(list(range(0, model.n_rooms)))
-    cards = ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
+    return ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
+
+def decideQuestionWithKnowledge(model: CluedoGameModel, current_agent: Player):
+    weapons = set(range(0, model.n_weapons))
+    people = set(range(0, model.n_people))
+    rooms = set(range(0, model.n_rooms))
+    for possibilities in model.getPossibleSolutions(current_agent):
+        possibilitiesSplit = possibilities.split()
+        weapons = weapons.difference({int(possibilitiesSplit[0][1])})
+        people = people.difference({int(possibilitiesSplit[1][1])})
+        rooms = rooms.difference({int(possibilitiesSplit[2][1])})
+    weapons = weapons.difference(set(current_agent.weapons))
+    people = people.difference(set(current_agent.people))
+    rooms = rooms.difference(set(current_agent.rooms))
+    weapon = random.choice(list(set(range(0, model.n_weapons)).difference(weapons)))
+    person = random.choice(list(set(range(0, model.n_people)).difference(people)))
+    room = random.choice(list(set(range(0, model.n_rooms)).difference(rooms)))
+    return ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
+
+def nextMove(model: CluedoGameModel, current_agent: Player, base_on_knowledge: bool):
+    if base_on_knowledge:
+        cards = decideQuestionWithKnowledge(model, current_agent)
+    else:
+        cards = decideRandomQuestion(model, current_agent)
     
     model.movesHistory.append('Turn ' + str(model.turn) + ': Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
     model.drawActions()
@@ -94,12 +141,14 @@ def askForCards(agent: Player, other_players, cards: list[str], model: CluedoGam
                     agent.updateKnowledge(show)
                     model.agentResponds(str(player), question, model.turn)
                     cards_showed.append('Agent ' + str(player) + ' showed card ' + show + ' to Agent ' + str(agent))
+                    if len(cards_to_show) > 1:
+                        model.trueWorld.shownCardChoices.append(AgentShownChoice((show[0]), int(show[1]), str(player), model.turn)) 
                     break
                 else:
                     model.agentSaysNo(player, question)
         return cards_showed
 
-def runGame(model):
+def runGame(model, base_on_knowledge):
     #TICK = USEREVENT + 1
     #pygame.time.set_timer(TICK, 1000)
     while True:
@@ -109,27 +158,11 @@ def runGame(model):
         buttonClicked = model.clickCheck()
         if buttonClicked:
             model.turn += 1
-            nextMove(model, model.schedule.agents[model.turn % len(model.schedule.agents)])
+            nextMove(model, model.schedule.agents[model.turn % len(model.schedule.agents)], base_on_knowledge)
         pygame.display.update()
 
 # After this point the kripke structure, model and agents are initialized, but the agents do not have cards in thier hands
 
-"""kripke_structure = initializeKripke(
-    agents=agents,
-    n_weapons=n_weapons,
-    n_people=n_people,
-    n_rooms=n_rooms
-    )"""
+model = initializeGame(agents, n_weapons, n_people, n_rooms, n_high_order)
 
-
-# TODO: (DONE) find a way to update the hands of each agent so that they stay in line with the relations in the kripke structure
-# an agents hand is updated using model.schedule.agent[i].setAtributes(weapon, person, room), i is the number of the agent so: a -> 0 and so on
-# Not all atributes have to be given in the function setAtributes().
-
-
-model = initializeGame(agents, n_weapons, n_people, n_rooms)
-# TODO: Make mouse inputs work, at the moment the game doesn't work properly, 
-# it has to be shut down by force, to see results in terminal and not game interface 
-# comment out runGame(Model) 
-
-runGame(model)
+runGame(model, base_on_knowledge)

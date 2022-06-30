@@ -31,7 +31,7 @@ class AgentShownChoice():
         self.turn = turn 
     
     def __str__(self):
-        return str(self.agentFrom) + str(self.type) + str(self.number) + '_t' + str(self.turn)
+        return str(self.agent) + str(self.type) + str(self.number) + '_t' + str(self.turn)
         
     def equalTo(self, type, number, agent):
         return self.type == type and self.number == number and self.agent == agent
@@ -48,6 +48,12 @@ class CluedoWorld():
             name += str(atom) + ' '
         for choice in self.shownCardChoices:
             name += str(choice) + ' '
+        return name[:-1]
+    
+    def noTurnAtoms(self):
+        name = ''
+        for atom in self.atoms:
+            name += str(atom) + ' '
         return name[:-1]
 
     def addShownCardChoice(self, choice):
