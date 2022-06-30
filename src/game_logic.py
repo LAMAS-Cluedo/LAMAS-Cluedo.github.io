@@ -64,18 +64,19 @@ def nextMove(model: CluedoGameModel, current_agent: Player):
     except (TypeError, IndexError):
         room = random.choice(list(range(0, model.n_rooms)))
     cards = ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
-    
-    model.movesHistory.append('Turn ' + str(model.turn) + ': Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
-    model.drawActions()
 
-    cards_showed = askForCards(current_agent, model.schedule.agents, cards, model)
-    if (len(cards_showed) == 0):
-        model.movesHistory.append('No agents responded')
-    model.movesHistory += cards_showed
-    # model.movesHistory.append('Next Move')# delete when actions implemented
-    model.drawKnowledge()
-    model.drawActions()
-    pass
+    if model.turn > -1:
+        model.movesHistory.append('Turn ' + str(model.turn) + ': Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
+        cards_showed = askForCards(current_agent, model.schedule.agents, cards, model)
+        if (len(cards_showed) == 0):
+            model.movesHistory.append('No agents responded')
+        model.movesHistory += cards_showed
+        # model.movesHistory.append('Next Move')# delete when actions implemented
+        model.drawKnowledge()
+        model.drawActions()
+    else:
+        model.drawKnowledge()
+        model.drawActions()
 
 def askForCards(agent: Player, other_players, cards: list[str], model: CluedoGameModel) -> list[str]:
         question = Question(str(agent), int(cards[0][-1]), int(cards[1][-1]), int(cards[2][-1]))
@@ -105,11 +106,13 @@ def runGame(model):
     while True:
         buttonClicked = False
         model.mouse['click'] = -1
-        model.parse_events(pygame.event.get())
+        model.checkInterfaceAction(pygame.event.get())
         buttonClicked = model.clickCheck()
         if buttonClicked:
-            model.turn += 1
-            nextMove(model, model.schedule.agents[model.turn % len(model.schedule.agents)])
+            #model.checkGameOver('a', 'w' + str(model.target_cards['weapon']), 'p' + str(model.target_cards['person']), 'r' + str(model.target_cards['room']))
+            if model.gameInProgress != -1:
+                nextMove(model, model.schedule.agents[model.turn % len(model.schedule.agents)])
+                model.turn += 1
         pygame.display.update()
 
 # After this point the kripke structure, model and agents are initialized, but the agents do not have cards in thier hands

@@ -126,6 +126,18 @@ class CluedoGameModel(Model):
             self.dim_display/2,
             100
         )
+        self.zone_gameOver = Rect(
+            20,
+            20,
+            self.dim_display - 40,
+            self.dim_display - 40
+        )
+        self.zone_quitButton = Rect(
+            self.zone_gameOver.x + self.zone_gameOver.w/2 - 40,
+            self.zone_gameOver.y + self.zone_gameOver.h/2 - 20,
+            80,
+            40
+        )
 
 
     def drawInterface(self: Model)-> None:
@@ -191,6 +203,46 @@ class CluedoGameModel(Model):
                     True, [0,0,0]), 
                 ((self.zone_knowledge.w/2 + 10), (self.zone_knowledge.y + 10 + (i+1)*25))
                 )
+
+    def drawGameOver(self: Model, winning_agent: str, weapon: str, person: str, room: str):
+        self.display.fill(self.game_theme_color)
+        pygame.draw.rect(self.display, self.color_edge, self.zone_gameOver, 10)
+        self.display.blit(
+            self.font.render(
+                'Game Ended',
+                True, [0,0,0]), 
+            ((self.zone_gameOver.x + self.zone_gameOver.w/2 - 80), (self.zone_gameOver.y + 30))
+            )
+        self.display.blit(
+            self.fontSmall.render(
+                'Cards on Table: w' + 
+                str(self.target_cards['weapon']) + ' p' + 
+                str(self.target_cards['person'])+ ' r' +
+                str(self.target_cards['room']),
+                True, [0,0,0]), 
+            ((self.zone_gameOver.x +self.zone_gameOver.w/2 - 70), (self.zone_gameOver.y + 80))
+            )
+
+        self.display.blit(
+            self.fontSmall.render(
+                'Agent ' + str(winning_agent) + 
+                ' chose the following cards: ' + 
+                weapon + ' ' + 
+                person + ' ' +
+                room,
+                True, [0,0,0]), 
+            ((self.zone_gameOver.x +self.zone_gameOver.w/2 - 125), (self.zone_gameOver.y + 120))
+            )
+
+        pygame.draw.rect(self.display, self.color_edge, self.zone_quitButton, 2)
+        self.display.blit(
+            self.font.render(
+                'Quit',
+                True, [0,0,0]), 
+            ((self.zone_quitButton.x + 10), (self.zone_quitButton.y + 8))
+            )
+            
+
 
     def initializeDisplay(self: Model):
         pygame.mouse.set_visible
@@ -292,6 +344,24 @@ class CluedoGameModel(Model):
                 #             newRelation[oneAgent].append((worldFrom, worldTo))
                 # self.ks.relations = newRelation
 
+    def removeAgent(self: Model, remove_agent: str):
+        for agent in self.schedule.agents:
+            if str(agent) == remove_agent:
+                self.schedule.agents.remove(agent)
+                for a1 in self.schedule.agents:
+                    print(str(a1))
+
+    def checkGameOver(self: Model, agent: str, weapon: str, person: str, room: str):
+        self.movesHistory.append('Agent ' + agent + ' acuses cards: ' + weapon + ' ' + person + ' ' + room)
+        if weapon == 'w' + str(self.target_cards['weapon']) and \
+             person == 'p' + str(self.target_cards['person']) and \
+                 room == 'r' + str(self.target_cards['room']):
+                 self.gameInProgress = -1
+                 self.drawGameOver(agent, weapon, person, room)
+        else:
+            self.movesHistory.append('Agent ' + agent + ' is wrong and removed')
+            self.removeAgent(agent)
+
     def checkZone(self: Model, zone: Rect) -> bool:
         if (self.mouse['click'] == 1) and \
             (
@@ -303,29 +373,30 @@ class CluedoGameModel(Model):
             return False
 
     def clickCheck(self: Model) -> bool:
-        if self.checkZone(self.zone_playButton) and not self.gameInProgress:
-            self.gameInProgress = True
+        if self.checkZone(self.zone_quitButton) and self.gameInProgress == -1:
+            pygame.quit()
+            sys.exit()
+        if self.checkZone(self.zone_playButton) and self.gameInProgress == 0:
+            self.gameInProgress = 1
             print('The Game starts now!')
             self.movesHistory.append('Game Initialized')
             self.movesHistory.append('Cards dealt')
             return True
-        if self.checkZone(self.zone_nextButton) and self.gameInProgress:
+        if self.checkZone(self.zone_nextButton) and self.gameInProgress == 1:
             print('Next move!')
             return True
 
 
-# TODO: change this function
-    def parse_events(self, event_handle):
-        # Handle input events
-        for event in event_handle:
-            if event.type == QUIT:
+    def checkInterfaceAction(self: Model, interface_actions):
+        for action in interface_actions:
+            if action.type == QUIT:
                 pygame.quit()
                 sys.exit()
             else:
                 try:
-                    self.mouse['coordinates'] = event.dict['pos']
+                    self.mouse['coordinates'] = action.dict['pos']
                 except:
                     self.mouse['coordinates'] = (0,0)
-                if event.type == MOUSEBUTTONDOWN:
-                    if event.dict['button'] == 1:
+                if action.type == MOUSEBUTTONDOWN:
+                    if action.dict['button'] == 1:
                         self.mouse['click'] = 1
