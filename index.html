@@ -15,7 +15,8 @@ http://www.templatemo.com/tm-514-magazee
   <!-- Google web font "Open Sans" -->
   <link rel="stylesheet" href="css/bootstrap.min.css"> <!-- https://getbootstrap.com/ -->
   <link rel="stylesheet" href="css/templatemo-style.css"> <!-- Templatemo style -->
-
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+  </script>
   <script>
     var renderPage = true;
 
@@ -97,6 +98,10 @@ http://www.templatemo.com/tm-514-magazee
               (Kripke) model of the current state of the game. As the game progresses, the Kripke model will be updated
               accordingly. The game is played between AI agents.
             </p>
+            <h2 class="tm-text-color-white mb-4">The Research Question</h2>
+            <p class="mb-4 tm-text-color-white"> How is the win-rate and knowledge base of an agent affected by their
+              use of higher order knowledge?
+            </p>
             <h2 class="tm-text-color-white mb-4">Simplifications</h2>
             <p class="mb-4 tm-text-color-white"> Our game will not include movement between rooms and there is no
               restrictions on the questions that an agent can ask on their turn. The game is played with fewer cards
@@ -106,7 +111,6 @@ http://www.templatemo.com/tm-514-magazee
         </div>
       </div>
     </section>
-
 
     <!-- 3rd section -->
     <section class="row tm-section tm-col-md-reverse">
@@ -166,7 +170,7 @@ http://www.templatemo.com/tm-514-magazee
         <div class="tm-flex-center p-5 tm-bg-color-primary">
           <div class="tm-md-flex-center tm-text-color-white">
             <h1>The Logic Implementation</h1>
-            <h3 style="text-align:center">The Model, agents & inference</h3>
+            <h3 style="text-align:center">The Model, Agents & Inference</h3>
           </div>
         </div>
       </div>
@@ -181,20 +185,249 @@ http://www.templatemo.com/tm-514-magazee
           <div class="tm-md-flex-center">
             <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Kripke Model</h2>
             <p class="mb-4">The model’s foundation is a Kripke model that is shared among all agents. Naturally, the two
-              main elements of the model are the worlds/states and the accessibility relations between states.<br>
-              1. Worlds/States: Each world contains a set of atomic propositions. There are two types of propositions:
-              1) Propositions describing what is in the hidden stack(e.g. “w_1” entails that weapon 1 is in the hidden
-              stack) and 2) Propositions describing what is in agents’ hands (e.g. “c_{w_1}” entails agent c has weapon
-              1)
-              <br>
-              2. Accessibility relations: As per usual, the accessibility relations model what each agent considers to
-              be a possibility. Depending on the inference-capacity of each agent, different accessibility relations are
-              removed/changed after every round.
+              main elements of the model are the worlds and the accessibility relations between states.<br>
+              <li><u>Worlds</u></li> Each world contains a set of atomic propositions. There are two types of
+              propositions: Atoms describing what is in the hidden stack and atoms describing what is in agents’ hands.
+              The table below shows the potential propositions of a state (with 3 players, suspects, rooms & weapons).
+              Note that each world has as many atoms as there are cards. The user is able to adapt the number of
+              agents/players, rooms, weapons & people/suspects.
+            <table style="border-collapse:collapse;border-color:#aaa;border-spacing:0;border:none" class="tg">
+              <thead>
+                <tr>
+                  <th
+                    style="background-color:#f38630;border-color:inherit;border-style:solid;border-width:0px;color:#fff;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal"
+                    colspan="2"> Possible atoms of a state <br>(3 players and 3 cards of each category </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Atom
+                  </td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Meaning
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>w0
+                  </td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Hidden is weapon 0
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>p2
+                  </td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Hidden is person 2
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>r1
+                  </td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Hidden is room 1
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>aw1
+                  </td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Agent A has weapon 1
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>ar2
+                  </td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Agent A has room 2
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>bw2
+                  </td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Agent B has weapon 2
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>bp1
+                  </td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Agent B has person 1
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>cr0
+                  </td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Agent C has room 0
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>cp0
+                  </td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:2px 2px;text-align:center;vertical-align:center;word-break:normal">
+                    <br>Agent C has person 0
+                  </td>
+                </tr>
+              </tbody>
+            </table>
             </p>
-            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The inference rules</h2>
+
+            <p class="mb-4">
+              <li><u>Accessibility relations</u></li> As per usual, the accessibility relations model what each agent
+              considers to be a possibility. Depending on the inference-capacity of each agent, different accessibility
+              relations are removed/changed after every round. In the real game, at the start, the Kripke model is not
+              fully connected (not all worlds have an accessibility relation). This is the case as, for example, it is
+              not possible for 2 players to have the same weapon.
+            </p>
+
+            <p class="mb-4">
+              <li><u>Accessibility relations</u></li> Being able to adjust the number agents, rooms, weapons & people
+              is an important aspect of the implementation, as the model is very susceptible to <i>state explosion</i>.
+              The table below summarises the number of worlds & accessibility relationships for different parameter
+              values. It is worth noting that this is the number of accessibility relations for a fully connected model,
+              which is not possible in the real game (e.g. it is not possible for two players to have the same weapon.
+              Yet, with our implementation, a fully connected model has to be created before it is reduced based on what
+              is possible (this reduction is done right before the cards are dealt). Therefore, the numbers reported on
+              the table more accurately describe the computational demand of our implementation.
+              <br>
+              In reality, it is possible (and likely) that the values of each parameter is different, leading to some
+              players starting with 1 more/fewer card. The more cards are used in the game in total, the smaller the
+              advantage of having an extra card. Since the simulation will only be played with a few cards, we decided
+              to keep the values of the parameters equal so that no agent has a considerable advantage.
+            <table style="border-collapse:collapse;border-color:#aaa;border-spacing:0;border:none" class="tg">
+              <thead>
+                <tr>
+                  <th
+                    style="background-color:#f38630;border-color:inherit;border-style:solid;border-width:0px;color:#fff;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    People </th>
+                  <th
+                    style="background-color:#f38630;border-color:inherit;border-style:solid;border-width:0px;color:#fff;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    Rooms </th>
+                  <th
+                    style="background-color:#f38630;border-color:inherit;border-style:solid;border-width:0px;color:#fff;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    Weapons </th>
+                  <th
+                    style="background-color:#f38630;border-color:inherit;border-style:solid;border-width:0px;color:#fff;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    Worlds </th>
+                  <th
+                    style="background-color:#f38630;border-color:inherit;border-style:solid;border-width:0px;color:#fff;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    Accessibility Relations </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    2</td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    2</td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    2</td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    8</td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    64</td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    3</td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    3</td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    3</td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    216</td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    <span style="font-weight:400;font-style:normal">46.656</span></td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    4</td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    4</td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    4</td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    1728</td>
+                  <td
+                    style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    <span style="font-weight:400;font-style:normal">2.985.984</span></td>
+                </tr>
+                <tr>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    5</td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    5</td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    5</td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    8000</td>
+                  <td
+                    style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
+                    <span style="font-weight:400;font-style:normal">64.000.000</span></td>
+                </tr>
+              </tbody>
+            </table>
+            </p>
+
+            <!-- 
+            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Agents and their Strategy</h2>
             <p class="mb-4">
               Will be developed later on and will be defined based on each possible event in the game.
             </p>
+            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Inference Rules</h2>
+            <p class="mb-4">
+              Will be developed later on and will be defined based on each possible event in the game.
+            </p> -->
           </div>
         </div>
       </div>
