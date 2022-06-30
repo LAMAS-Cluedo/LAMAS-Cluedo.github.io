@@ -390,3 +390,10 @@ select:focus {
         padding: 30px 25px;
     }
 }
+
+
+.whiteList li{
+
+    color: #ffffff;
+  
+  }

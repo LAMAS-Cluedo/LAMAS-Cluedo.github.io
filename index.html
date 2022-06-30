@@ -57,27 +57,17 @@ http://www.templatemo.com/tm-514-magazee
 
     <!-- 2nd section -->
     <section class="row tm-section tm-col-md-reverse">
-      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-8">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
         <div class="tm-flex-center p-5">
           <div class="tm-md-flex-center">
             <h2 class="tm-text-color-primary mb-4">The game</h2>
-            <p class="mb-4"> In the game there are three piles of cards which show six possible weapons, six possible
-              murderers, and ten possible rooms. One card from each pile is selected at random and secretly to be what
-              will be referred to as the three “correct" cards which the players will try to deduce. Then the rest of
-              the cards are randomly split between the players to give them an initial set of cards that they can
-              already consider not to be in the correct set.
-            </p>
-            <p class="mb-4"> When playing the game the players then take turns
-              “suspecting" combinations of murderers, weapons, and rooms. In response to this question each player takes
-              turns to either say if they do not have one of the cards that were suspected, or if they do, secretly show
-              that card to the suspecting player and then the turn ends. Once a player believes that they know the
-              hidden stack of cards, they can accuse that set and check for themselves if they are correct. If they are
-              wrong, they return the stack and are out of the game, otherwise they win.
-            </p>
+            <p class="mb-4"> Cluedo is a mystery-solving board game. By moving around the rooms and asking questions to
+              others, players investigate a murder. Specifically, they try to discover who was murdered, with what
+              weapon and in what room. The investigator who uncovers the mystery first, wins the game.</p>
           </div>
         </div>
       </div>
-      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-4 p-0">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 p-0">
         <div class="tm-flex-center p-0 tm-bg-color-primary">
           <div class="tm-max-w-300 tm-flex-center tm-flex-col">
             <img src="img/cluedoBoard.jpeg" alt="Image" class="img-fluid">
@@ -103,9 +93,32 @@ http://www.templatemo.com/tm-514-magazee
               use of higher order knowledge?
             </p>
             <h2 class="tm-text-color-white mb-4">Simplifications</h2>
-            <p class="mb-4 tm-text-color-white"> Our game will not include movement between rooms and there is no
+            <p class="mb-4 tm-text-color-white"> Our game will not include movement between rooms and there are no
               restrictions on the questions that an agent can ask on their turn. The game is played with fewer cards
               (weapons, rooms & agents) to reduce the number of Kripke worlds.
+            </p>
+
+            <h2 class="tm-text-color-white mb-4">The Game Process</h2>
+            <p class="mb-4 tm-text-color-white">
+            <ol class="whiteList">
+              <li>1 card from each category is chosen to be hidden in the middle (3 cards in total)</li>
+              <li>Cards are dealt to the players: For each category (people, weapons & rooms), the remaining cards are
+                distributed for all agents. When the cards in the category run out, cards of the next category are
+                dealt, starting with the player where we left off.</li>
+              <li>Once the cards are dealt, the first round of the game starts: The first player asks a question
+                consisting of a request for a person, weapon and room. The other agents, in order, have to show to the
+                asking player one of the cards they were asked about (if they have it), or pass if they don't have any
+                of the cards they were asked about. If a player shows a card to the asking player or if all players have
+                none of the cards they were asked about, the round ends.</li>
+              <li>Similar to the previous round, the next player can now ask a question and the remaining of the round
+                follows the same rules. </li>
+              <li>Once a player considers that they know enough about which 3 cards are in the middle, they can win by
+                accusing the 3 hidden cards in their round. If the accusing player is right with their accusation, they
+                win the game. If their accusation is incorrect, they are eliminated from the game and their cards remain
+                hidden (the eliminated player cannot show any cards to the other players).</li>
+              <li>In case of a false accusation, the game simply continues until a player makes the correct accusation
+                (in case everyone makes a wrong accusation, everyone loses).</li>
+            </ol>
             </p>
           </div>
         </div>
@@ -117,8 +130,8 @@ http://www.templatemo.com/tm-514-magazee
       <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
         <div class="tm-flex-center p-5 tm-bg-color-white">
           <div class="tm-md-flex-center">
-            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Requirements</h2>
-            <h4 class="tm-text-color-primary mb-4" , style="text-align:center">Must have</h4>
+            <h2 class="tm-text-color-primary mb-4">The Requirements</h2>
+            <h4 class="tm-text-color-primary mb-4">Must have</h4>
             <p class="mb-4">
             <ul>
               <li><u>Cluedo implementation</u>: The main requirement of this project is that implementation of the game
@@ -130,7 +143,7 @@ http://www.templatemo.com/tm-514-magazee
                 regards to the location of the cards (cards in the centre & cards in the agents’ hands)</li>
             </ul>
             </p>
-            <h4 class="tm-text-color-primary mb-4" , style="text-align:center">Should have</h4>
+            <h4 class="tm-text-color-primary mb-4">Should have</h4>
             <p class="mb-4">
             <ul>
               <li><u>Step button</u>: The user should be able to interact with the simulation through a ‘step’ button
@@ -143,7 +156,7 @@ http://www.templatemo.com/tm-514-magazee
                 progresses through the game (in terms of number of worlds) and which agent won</li>
             </ul>
             </p>
-            <h4 class="tm-text-color-primary mb-4" , style="text-align:center">Could have</h4>
+            <h4 class="tm-text-color-primary mb-4">Could have</h4>
             <p class="mb-4">
             <ul>
               <li><u>Kripke model access</u>: An extension of the game is for the user to be able to access the Kripke
@@ -183,7 +196,7 @@ http://www.templatemo.com/tm-514-magazee
       <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
         <div class="tm-flex-center p-5 tm-bg-color-white">
           <div class="tm-md-flex-center">
-            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Kripke Model</h2>
+            <h2 class="tm-text-color-primary mb-4">The Kripke Model</h2>
             <p class="mb-4">The model’s foundation is a Kripke model that is shared among all agents. Naturally, the two
               main elements of the model are the worlds and the accessibility relations between states.<br>
               <li><u>Worlds</u></li> Each world contains a set of atomic propositions. There are two types of
@@ -319,10 +332,10 @@ http://www.templatemo.com/tm-514-magazee
               values. It is worth noting that this is the number of accessibility relations for a fully connected model,
               which is not possible in the real game (e.g. it is not possible for two players to have the same weapon.
               Yet, with our implementation, a fully connected model has to be created before it is reduced based on what
-              is possible (this reduction is done right before the cards are dealt). Therefore, the numbers reported on
+              is possible (this reduction is done right before the cards are dealt). Therefore, the numbers reported in
               the table more accurately describe the computational demand of our implementation.
               <br>
-              In reality, it is possible (and likely) that the values of each parameter is different, leading to some
+              In reality, it is possible (and likely) that the values of each parameter are different, leading to some
               players starting with 1 more/fewer card. The more cards are used in the game in total, the smaller the
               advantage of having an extra card. Since the simulation will only be played with a few cards, we decided
               to keep the values of the parameters equal so that no agent has a considerable advantage.
@@ -379,7 +392,8 @@ http://www.templatemo.com/tm-514-magazee
                     216</td>
                   <td
                     style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
-                    <span style="font-weight:400;font-style:normal">46.656</span></td>
+                    <span style="font-weight:400;font-style:normal">46.656</span>
+                  </td>
                 </tr>
                 <tr>
                   <td
@@ -396,7 +410,8 @@ http://www.templatemo.com/tm-514-magazee
                     1728</td>
                   <td
                     style="background-color:#FCFBE3;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
-                    <span style="font-weight:400;font-style:normal">2.985.984</span></td>
+                    <span style="font-weight:400;font-style:normal">2.985.984</span>
+                  </td>
                 </tr>
                 <tr>
                   <td
@@ -413,33 +428,84 @@ http://www.templatemo.com/tm-514-magazee
                     8000</td>
                   <td
                     style="background-color:#fff;border-color:inherit;border-style:solid;border-width:0px;color:#333;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:center;vertical-align:top;word-break:normal">
-                    <span style="font-weight:400;font-style:normal">64.000.000</span></td>
+                    <span style="font-weight:400;font-style:normal">64.000.000</span>
+                  </td>
                 </tr>
               </tbody>
             </table>
             </p>
-
-            <!-- 
-            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Agents and their Strategy</h2>
-            <p class="mb-4">
-              Will be developed later on and will be defined based on each possible event in the game.
-            </p>
-            <h2 class="tm-text-color-primary mb-4" , style="text-align:center">The Inference Rules</h2>
-            <p class="mb-4">
-              Will be developed later on and will be defined based on each possible event in the game.
-            </p> -->
           </div>
         </div>
       </div>
     </section>
 
 
-    <!-- 6th section -->
+    <!-- 2.5nd section -->
     <section class="row tm-section tm-col-md-reverse">
       <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
         <div class="tm-flex-center p-5 tm-bg-color-primary">
-          <div class="tm-md-flex-center tm-text-color-white" , style="text-align:center">
-            <h1>The Software Implementation</h1>
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-white mb-4">The Agents</h2>
+            <p class="mb-4 tm-text-color-white"> The user can decide how many agents participate in the game. They also
+              determine the number of 1st or Higher-Order knowledge agents. Perhaps counter-intuitively, first and
+              higher-order knowledge agents are not separated by the type of questions they ask but rather by the
+              information they can obtain from the events of the game (the inference strategies are detailed in the
+              following section).
+              <br><br>
+              When it comes to the players' strategy, they all follow a simple greedy method to decide what question to
+              ask. Specifically, they will only ask questions about weapons/rooms/people that they know might be in the
+              middle. In other words, if an agent knows that a different agent has weapon 1, they will not inquire about
+              it. Even so, they might still ask a question about a card that they have in their hand (this is also a
+              good strategy so that the player receives more relevant information).
+              <br><br>
+              From all possible questions that follow these rules, players choose a question randomly.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
+        <div class="tm-flex-center p-5 tm-bg-color-white">
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-primary mb-4">The Inference Rules</h2>
+            As mentioned previously, 1st and Higher-Order agents differ in the inferences they can make during the game.
+            <br><br>
+            <h4 class="tm-text-color-primary mb-4">1st-Order Inference</h4>
+            <p class="mb-4">
+              The inference rule that 1st-order knowledge players follow is very simple: When the 1st order agents ask a
+              question
+              and receives a no as an answer, they now know that the answering agent does not have any of the asked
+              cards. In terms of the Kripke model, the accessibility relations of the asking agent to the worlds where
+              the answering agent has any of the three asked cards, are removed.
+              <br><br>
+              Additionally, if the answering agent shows them a card, they now know that this card is nowhere else.
+              Specifically, the accessibility relations of the asking agent to the worlds where that card is in the
+              middle or in the hand of
+              another player, are removed.
+            </p>
+            <h4 class="tm-text-color-primary mb-4">Higher-Order Inference</h4>
+            <p class="mb-4">
+              Higher-order knowledge players observe all responses, instead of only the responses addressed to them. The
+              inference rules they follow are detailed below.
+              <br><br>
+              First, if any agent responds negatively to a question, all accessibility relations of higher order agents
+              to worlds where the answering agent has any of the 3 asked cards are removed. In other words, all higher
+              order knowledge agents now know that the answering agent does not have any of cards in the question.
+              <br><br>
+              Then, in the case where an agent A shows one of the asked cards to agent B:
+            <ul>
+              <li>in worlds where agent A has one of the asked cards, the accessibility relations of agent B are
+                updated so that they do not consider worlds with that card outside of agent A's hand</li>
+              <li> worlds where agent A has multiple of the asked cards are duplicated, one for each of the different
+                possible cards that they could have shown to agent B. For each duplicate world, agent B's accessibility
+                relations are updated such that they do not consider worlds with that card outside of agent A's hand.
+                Finally, create accessibility relationships between all duplicate worlds for all other higher order
+                agents, as they do not know which of the cards was shown.</li>
+            </ul>
+            </p>
           </div>
         </div>
       </div>
@@ -452,14 +518,11 @@ http://www.templatemo.com/tm-514-magazee
       <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
         <div class="tm-flex-center p-5 tm-bg-color-white">
           <div class="tm-md-flex-center">
-            <p class="mb-4">We will use the MESA (for the MAS aspect) and MLSolver (for building and updating the Kripke
-              model) packages. The solve function from the MLSolver function uses a function that generates the powerset
-              of all worlds. As our model will contain a significant number of words, we need to code our own
-              implementation of the function, as using the existing one is too computational expensive for our
-              application (for more than a few worlds). As the user inputs the data, MESA will be used to track the
-              game’s state and decide what information is needed next and in the event of user input we will update the
-              kripke model through ml solver. At any point, the user will be able to query the ML solver model using
-              epistemic logic formulae.
+            <h2 class="tm-text-color-primary mb-4">The Software Implementation</h2>
+            <p class="mb-4"> MESA is used for the MAS aspect of this project, as well as MLSolver for building and
+              updating the Kripke model.
+              <br><br>
+              All source files can be found in <a href="https://github.com/LAMAS-Cluedo/LAMAS-Cluedo.github.io">this repository</a>.
             </p>
           </div>
         </div>
