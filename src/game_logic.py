@@ -1,17 +1,8 @@
-from email.mime import base
-import pickle
 import random
-from itertools import cycle
-from turtle import pos
-from black import Set
-from numpy import true_divide
 
 import pygame
-from pygame.locals import USEREVENT
-from pyparsing import null_debug_action
 from models.agent_model import Player
 
-from models.logic_model import initializeKripke
 from models.game_model import CluedoGameModel
 from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
@@ -111,18 +102,19 @@ def nextMove(model: CluedoGameModel, current_agent: Player, base_on_knowledge: b
         cards = decideQuestionWithKnowledge(model, current_agent)
     else:
         cards = decideRandomQuestion(model, current_agent)
-    
-    model.movesHistory.append('Turn ' + str(model.turn) + ': Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
-    model.drawActions()
 
-    cards_showed = askForCards(current_agent, model.schedule.agents, cards, model)
-    if (len(cards_showed) == 0):
-        model.movesHistory.append('No agents responded')
-    model.movesHistory += cards_showed
-    # model.movesHistory.append('Next Move')# delete when actions implemented
-    model.drawKnowledge()
-    model.drawActions()
-    pass
+    if model.turn > -1:
+        model.movesHistory.append('Turn ' + str(model.turn) + ': Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
+        cards_showed = askForCards(current_agent, model.agents, cards, model)
+        if (len(cards_showed) == 0):
+            model.movesHistory.append('No agents responded')
+        model.movesHistory += cards_showed
+        # model.movesHistory.append('Next Move')# delete when actions implemented
+        model.drawKnowledge()
+        model.drawActions()
+    else:
+        model.drawKnowledge()
+        model.drawActions()
 
 def askForCards(agent: Player, other_players, cards: list[str], model: CluedoGameModel) -> list[str]:
         question = Question(str(agent), int(cards[0][-1]), int(cards[1][-1]), int(cards[2][-1]))
@@ -154,11 +146,13 @@ def runGame(model, base_on_knowledge):
     while True:
         buttonClicked = False
         model.mouse['click'] = -1
-        model.parse_events(pygame.event.get())
+        model.checkInterfaceAction(pygame.event.get())
         buttonClicked = model.clickCheck()
         if buttonClicked:
-            model.turn += 1
-            nextMove(model, model.schedule.agents[model.turn % len(model.schedule.agents)], base_on_knowledge)
+            #model.checkGameOver('a', 's' + str(model.target_cards['weapon']), 'p' + str(model.target_cards['person']), 'r' + str(model.target_cards['room']))
+            if model.gameInProgress != -1:
+                nextMove(model, model.agents[model.turn % len(model.agents)], base_on_knowledge)
+                model.turn += 1
         pygame.display.update()
 
 # After this point the kripke structure, model and agents are initialized, but the agents do not have cards in thier hands
