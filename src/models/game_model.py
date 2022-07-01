@@ -33,7 +33,7 @@ class CluedoGameModel():
         self.turn = -1
 
         for i, agent_name in enumerate(names_agents):
-            agent = Player(agent_name, i >= (len(names_agents) - self.n_high_order))
+            agent = Player(agent_name, self, i >= (len(names_agents) - self.n_high_order))
             self.agents.append(agent)
 
         self.initializeLogicStructure(
