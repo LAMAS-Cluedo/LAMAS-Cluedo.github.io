@@ -22,7 +22,7 @@ def decideRandomQuestion(model: CluedoGameModel, current_agent: Player) -> list:
     room = random.choice(list(range(0, model.n_rooms)))
     return ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
 
-
+# Function to choose a question for an agent based on their current knowledge
 def decideQuestionWithKnowledge(model: CluedoGameModel, current_agent: Player, possible_solutions: list):
     weapons = set(range(0, model.n_weapons))
     people = set(range(0, model.n_people))

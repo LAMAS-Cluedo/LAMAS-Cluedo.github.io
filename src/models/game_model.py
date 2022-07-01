@@ -267,20 +267,23 @@ class CluedoGameModel():
         self.createZones()
         self.drawInterface()
 
+    # Function to update the model when an agent says they have none of the cards in a question
     def agentSaysNo(self, agent: str, question: Question) -> None:
         for world in tqdm(self.ks.worlds):
             keys = world.assignment.keys()
             if (str(AgentCard('w', question.weapon, agent)) in keys or 
                     str(AgentCard('p', question.person, agent)) in keys or
                     str(AgentCard('r', question.room, agent)) in keys):
-                self.ks.remove_node_by_name(world.name)
+                self.ks.remove_node_by_name(world.name) # World removed when agent has any of the questioned cards
 
+    # Function to check if an agent would still consider a given world possible after being shown a card 
     def agentShownPossibleWorld(self, agent: str, shownAtom: str, possibleWorld: str):
         for possAtom in possibleWorld.split():
             if possAtom[:-2] != agent and possAtom[-2:] == shownAtom:
                 return False
         return True
 
+    # Function to update the model when an agent shows a card to another agent
     def agentResponds(self, agent: str, question: Question, turn: int) -> None:
         agents = self.ks.relations.keys()
         
@@ -295,10 +298,10 @@ class CluedoGameModel():
                 if atom == agent + question.rAtom():
                     cardsToShow.append(question.rAtom())
             
-            if len(cardsToShow) == 0:
+            if len(cardsToShow) == 0: # Agent has none of the given cards so the world is removed
                 self.ks.remove_node_by_name(world.name)
                 
-            elif len(cardsToShow) == 1:
+            elif len(cardsToShow) == 1: # Agent has one of the cards so relations are updated for that card
                 newRelation = []
                 cardToShow = cardsToShow[0]
                 for (worldFrom, worldTo) in self.ks.relations[question.agent]:
@@ -306,7 +309,7 @@ class CluedoGameModel():
                         newRelation.append((worldFrom, worldTo))
                 self.ks.relations[question.agent] = newRelation
             
-            else:
+            else: # Agent has multiple cards they could show so multiple worlds are created for each possibility
                 newWorlds = []
                 self.ks.worlds.remove(world)
                 for i, cardToShow in enumerate(cardsToShow):
@@ -334,15 +337,17 @@ class CluedoGameModel():
                 
                 self.ks.relations = newRelation
 
+    # Get the possible combinations of solution cards an agent considers possible
     def getPossibleSolutions(self, agent: Player) -> set:
         worlds = set([])
 
-        if agent.high_order:
+        if agent.high_order: # If agent is high order their possibilites are found in the kripke structure
             for (worldFrom, worldTo) in self.ks.relations[str(agent)]:
                 if worldFrom == str(self.trueWorld):
                     worlds.add((worldTo[:8]))
             return worlds
 
+        # If an agent is first order their possibilities are found from their simple knowledge base of cards they've seen
         weapons = list(range(0, self.n_weapons))
         people = list(range(0, self.n_people))
         rooms = list(range(0, self.n_rooms))
