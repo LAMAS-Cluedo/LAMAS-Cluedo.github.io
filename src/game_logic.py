@@ -15,20 +15,11 @@ def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: in
     model.dealCards(n_weapons, n_people, n_rooms)
     return model
 
-
+# Function to choose a question at random for an agent
 def decideRandomQuestion(model: CluedoGameModel, current_agent: Player) -> list:
-    try:
-        weapon = random.choice(list(range(0, model.n_weapons)).remove(int(current_agent.weapons[-1])))
-    except (TypeError, IndexError):
-        weapon = random.choice(list(range(0, model.n_weapons)))
-    try:    
-        person = random.choice(list(range(0, model.n_people)).remove(int(current_agent.people[-1])))
-    except (TypeError, IndexError):
-        person = random.choice(list(range(0, model.n_people)))
-    try:
-        room = random.choice(list(range(0, model.n_rooms)).remove(int(current_agent.rooms[-1])))
-    except (TypeError, IndexError):
-        room = random.choice(list(range(0, model.n_rooms)))
+    weapon = random.choice(list(range(0, model.n_weapons)))
+    person = random.choice(list(range(0, model.n_people)))
+    room = random.choice(list(range(0, model.n_rooms)))
     return ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
 
 
