@@ -8,62 +8,13 @@ from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
 from models.cluedo import *
 
-n_agents = 0
-while n_agents > 6 or n_agents < 2:
-    try:
-        n_agents = int(input('Number of players (must be 2-6): '))
-    except ValueError:
-        print('invalid input')
-agents = listAgents(n_agents)
 
-n_high_order = -1
-while n_high_order > n_agents or n_high_order < 0:
-    try:
-        n_high_order = int(input('Number of players using high order knowledge: '))
-        if n_high_order > n_agents:
-            print('Number cannot be higher than the number of players')
-        if n_high_order < 0:
-            print('Number cannot be negative')
-    except ValueError:
-        print('invalid input')
-
-n_weapons = 0
-while n_weapons > 10 or n_weapons < 1:
-    try:
-        n_weapons = int(input('Number of weapons (must be 1-10): '))
-    except ValueError:
-        print('invalid input')
-
-n_people = 0
-while n_people > 10 or n_people < 1:
-    try:
-        n_people = int(input('Number of people (must be 1-10): '))
-    except ValueError:
-        print('invalid input')
-
-n_rooms = 0
-while n_rooms > 10 or n_rooms < 1:
-    try:
-        n_rooms = int(input('Number of rooms (must be 1-10): '))
-    except ValueError:
-        print('invalid input')
-
-base_on_knowledge = None
-while base_on_knowledge != 'y' and base_on_knowledge != 'n':
-    try:
-        base_on_knowledge = input("Base questions on agent's knowledge? (respond with y/n): ")
-    except ValueError:
-        print('invalid input')
-if base_on_knowledge == 'y':
-    base_on_knowledge = True
-else:
-    base_on_knowledge = False
-    print('Questions will be chosen randomly')
-
+# Function that intializes the game, it generates a game model (CluedoGameModel) and deals the initial cards
 def initializeGame(agents: list[str], n_weapons: int, n_people: int, n_rooms: int, n_high_order: int) -> CluedoGameModel:
     model = CluedoGameModel(agents, n_weapons, n_people, n_rooms, n_high_order)
     model.dealCards(n_weapons, n_people, n_rooms)
     return model
+
 
 def decideRandomQuestion(model: CluedoGameModel, current_agent: Player) -> list:
     try:
@@ -79,6 +30,7 @@ def decideRandomQuestion(model: CluedoGameModel, current_agent: Player) -> list:
     except (TypeError, IndexError):
         room = random.choice(list(range(0, model.n_rooms)))
     return ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
+
 
 def decideQuestionWithKnowledge(model: CluedoGameModel, current_agent: Player, possible_solutions: list):
     weapons = set(range(0, model.n_weapons))
@@ -97,6 +49,8 @@ def decideQuestionWithKnowledge(model: CluedoGameModel, current_agent: Player, p
     room = random.choice(list(set(range(0, model.n_rooms)).difference(rooms)))
     return ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
 
+
+# Function performs 1 turn
 def nextMove(model: CluedoGameModel, current_agent: Player, base_on_knowledge: bool):
     possible_solutions = model.getPossibleSolutions(current_agent)
 
@@ -145,22 +99,15 @@ def askForCards(agent: Player, other_players, cards: list[str], model: CluedoGam
         return cards_showed
 
 def runGame(model, base_on_knowledge):
-    #TICK = USEREVENT + 1
-    #pygame.time.set_timer(TICK, 1000)
     while True:
         buttonClicked = False
         model.mouse['click'] = -1
+
         model.checkInterfaceAction(pygame.event.get())
         buttonClicked = model.clickCheck()
+
         if buttonClicked:
-            #model.checkGameOver('a', 's' + str(model.target_cards['weapon']), 'p' + str(model.target_cards['person']), 'r' + str(model.target_cards['room']))
             if model.gameInProgress != -1:
                 nextMove(model, model.agents[model.turn % len(model.agents)], base_on_knowledge)
                 model.turn += 1
         pygame.display.update()
-
-# After this point the kripke structure, model and agents are initialized, but the agents do not have cards in thier hands
-
-model = initializeGame(agents, n_weapons, n_people, n_rooms, n_high_order)
-
-runGame(model, base_on_knowledge)
