@@ -15,9 +15,10 @@ from models.logic_model import initializeKripke
 from models.mlsolver.kripke import KripkeStructure, World
 from models.mlsolver.formula import *
 
-
+# Model to track everything happening in the game of cluedo
 class CluedoGameModel():
 
+    # Initialisation of the model
     def __init__(self, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int, n_high_order: int):
         pygame.init()
         self.n_weapons = n_weapons
@@ -32,22 +33,23 @@ class CluedoGameModel():
         self.trueWorld = CluedoWorld([])
         self.turn = -1
 
-        for i, agent_name in enumerate(names_agents):
+        for i, agent_name in enumerate(names_agents): # Instantiate the players as objects
             agent = Player(agent_name, self, i >= (len(names_agents) - self.n_high_order))
             self.agents.append(agent)
 
-        self.initializeLogicStructure(
+        self.ks = initializeKripke(
             self.agents, 
             n_weapons, 
             n_people, 
             n_rooms
             )
+
         self.font = pygame.font.SysFont(None, 40)
         self.fontSmall = pygame.font.SysFont(None, 20)
         self.initializeDisplay()
         super()
 
-
+    # Sets a given set of cards as the target cards
     def setCardsOnTable(self, weapon: int, person: int, room: int) -> None:
         if self.target_cards:
             print("Cards already set")
@@ -56,6 +58,7 @@ class CluedoGameModel():
             self.target_cards['person'] = person
             self.target_cards['room'] = room
 
+    # Deal the target cards and the rest to the players
     def dealCards(self, n_weapons: int, n_people: int, n_rooms: int) -> None:
         weapons = list(range(0, self.n_weapons))
         people = list(range(0, self.n_people))
@@ -71,7 +74,7 @@ class CluedoGameModel():
         people.remove(person)
         rooms.remove(room)
 
-        for agent in cycle(self.agents):
+        for agent in cycle(self.agents): # Dealing to the players
             if weapons:
                 weapon = random.choice(weapons)
                 agent.setAtributes(weapon=weapon)
@@ -89,16 +92,6 @@ class CluedoGameModel():
                 rooms.remove(room)
             else:
                 break
-
-
-    def initializeLogicStructure(self, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> KripkeStructure:
-        self.ks = initializeKripke(
-            agents=names_agents, 
-            n_weapons=n_weapons, 
-            n_people=n_people, 
-            n_rooms=n_rooms
-            )
-
 
     # Function that creates all the zones needed for the game, based on coordinates
     def createZones(self) -> None:
