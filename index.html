@@ -62,8 +62,9 @@ http://www.templatemo.com/tm-514-magazee
           <div class="tm-md-flex-center">
             <h2 class="tm-text-color-primary mb-4">The game</h2>
             <p class="mb-4"> Cluedo is a mystery-solving board game. By moving around the rooms and asking questions to
-              others, players investigate a murder. Specifically, they try to discover who was murdered, with what
-              weapon and in what room. The investigator who uncovers the mystery first, wins the game.</p>
+              others, players investigate a murder. Specifically, they try to discover who was the murderer, with what
+              weapon the murder was commited, and in what room the murder took place. The investigator who uncovers the 
+              mystery first, wins the game.</p>
           </div>
         </div>
       </div>
@@ -149,9 +150,8 @@ http://www.templatemo.com/tm-514-magazee
               <li><u>Step button</u>: The user should be able to interact with the simulation through a ‘step’ button
                 that
                 progresses the game by 1 step</li>
-              <li><u>1st & 2nd order knowledge</u>: Depending on the order of knowledge, agents can adapt the Kripke
-                model
-                differently (2nd order knowledge agents can infer more). This is explained later in more detail</li>
+              <li><u>1st & 2nd order knowledge</u>: Depending on the order of knowledge, agents can adapt their knowledege
+                differently (High order knowledge agents can infer more). This is explained later in more detail</li>
               <li><u>Metrics</u>: After each simulation, it should be possible to see how the knowledge of each agent
                 progresses through the game (in terms of number of worlds) and which agent won</li>
             </ul>
@@ -199,7 +199,7 @@ http://www.templatemo.com/tm-514-magazee
             <h2 class="tm-text-color-primary mb-4">The Kripke Model</h2>
             <p class="mb-4">The model’s foundation is a Kripke model that is shared among all agents. Naturally, the two
               main elements of the model are the worlds and the accessibility relations between states.<br>
-              <li><u>Worlds</u></li> Each world contains a set of atomic propositions. There are two types of
+              <li><u>Worlds</u></li> Each world contains a set of atomic propositions. Initially, there are two types of
               propositions: Atoms describing what is in the hidden stack and atoms describing what is in agents’ hands.
               The table below shows the potential propositions of a state (with 3 players, suspects, rooms & weapons).
               Note that each world has as many atoms as there are cards. The user is able to adapt the number of
@@ -319,14 +319,14 @@ http://www.templatemo.com/tm-514-magazee
 
             <p class="mb-4">
               <li><u>Accessibility relations</u></li> As per usual, the accessibility relations model what each agent
-              considers to be a possibility. Depending on the inference-capacity of each agent, different accessibility
-              relations are removed/changed after every round. In the real game, at the start, the Kripke model is not
-              fully connected (not all worlds have an accessibility relation). This is the case as, for example, it is
-              not possible for 2 players to have the same weapon.
+              considers to be a possibility. These accessibility relations are updated at each turn of the game. In 
+              The Kripke model is also not initially fully connected (not all worlds have an accessibility relation 
+              to every world). This is the case as, for example, an agent with the "person 1" card will not consider
+              a world where "person 1" is the true murderer to be possible.
             </p>
 
             <p class="mb-4">
-              <li><u>Accessibility relations</u></li> Being able to adjust the number agents, rooms, weapons & people
+              <li><u>Computational limitations</u></li> Being able to adjust the number agents, rooms, weapons & people
               is an important aspect of the implementation, as the model is very susceptible to <i>state explosion</i>.
               The table below summarises the number of worlds & accessibility relationships for different parameter
               values. It is worth noting that this is the number of accessibility relations for a fully connected model,
@@ -475,31 +475,25 @@ http://www.templatemo.com/tm-514-magazee
             <br><br>
             <h4 class="tm-text-color-primary mb-4">1st-Order Inference</h4>
             <p class="mb-4">
-              The inference rule that 1st-order knowledge players follow is very simple: When the 1st order agents ask a
-              question
-              and receives a no as an answer, they now know that the answering agent does not have any of the asked
-              cards. In terms of the Kripke model, the accessibility relations of the asking agent to the worlds where
-              the answering agent has any of the three asked cards, are removed.
-              <br><br>
-              Additionally, if the answering agent shows them a card, they now know that this card is nowhere else.
-              Specifically, the accessibility relations of the asking agent to the worlds where that card is in the
-              middle or in the hand of
-              another player, are removed.
+              The inference rule that 1st-order knowledge players follow is very simple: When answering agent shows
+              them a card, they now know that this card is nowhere else. In order to keep track of this the 1st-order
+              agents have a simple list of cards they've seen, and will consider all possibile solutions where none of
+              those cards are in the middle.
             </p>
             <h4 class="tm-text-color-primary mb-4">Higher-Order Inference</h4>
             <p class="mb-4">
-              Higher-order knowledge players observe all responses, instead of only the responses addressed to them. The
-              inference rules they follow are detailed below.
+              Higher-order knowledge players observe also what cards other agents have and what they know. The inference 
+              rules they follow are detailed below.
               <br><br>
-              First, if any agent responds negatively to a question, all accessibility relations of higher order agents
-              to worlds where the answering agent has any of the 3 asked cards are removed. In other words, all higher
-              order knowledge agents now know that the answering agent does not have any of cards in the question.
+              First, if any agent responds negatively to a question, all worlds where the answering agent has any of the 
+              3 asked cards are removed. In other words, all higher order knowledge agents now know that the answering 
+              agent does not have any of cards in the question.
               <br><br>
               Then, in the case where an agent A shows one of the asked cards to agent B:
             <ul>
-              <li>in worlds where agent A has one of the asked cards, the accessibility relations of agent B are
+              <li>In worlds where agent A has one of the asked cards, the accessibility relations of agent B are
                 updated so that they do not consider worlds with that card outside of agent A's hand</li>
-              <li> worlds where agent A has multiple of the asked cards are duplicated, one for each of the different
+              <li>In worlds where agent A has multiple of the asked cards are duplicated, one for each of the different
                 possible cards that they could have shown to agent B. For each duplicate world, agent B's accessibility
                 relations are updated such that they do not consider worlds with that card outside of agent A's hand.
                 Finally, create accessibility relationships between all duplicate worlds for all other higher order
@@ -511,6 +505,31 @@ http://www.templatemo.com/tm-514-magazee
       </div>
     </section>
 
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
+        <div class="tm-flex-center p-5 tm-bg-color-primary">
+          <div class="tm-md-flex-center tm-text-color-white">
+            <h1>User Interface</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
+        <div class="tm-flex-center p-5 tm-bg-color-white">
+          <div class="tm-md-flex-center">
+            <p>A user interface has also been implemented to allow for a nice interaction with the software and to presents
+              the results of a current game in a clear way. The main screen consists of a picture of the cluedo game in the 
+              top left box, an area with information on the turns that have been played in the top right box, a large zone
+              that displays information about the current game state and agent's knowledge in the centre, and finally two
+              buttons at the bottom to control the game. The "start" button is used to intially start the game, and the "next"
+              button is used to progress the game at each turn.
+            </p>
+            
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section class="row tm-section tm-col-md-reverse">
       <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
