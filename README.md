@@ -34,6 +34,8 @@ Includes:
 
 Mesa==0.9.0
 
+pickle-mixin==1.0.2
+
 pygame==2.1.2
 
 tqdm==4.63.0
