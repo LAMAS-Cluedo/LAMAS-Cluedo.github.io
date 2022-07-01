@@ -281,14 +281,6 @@ class CluedoGameModel():
                 return False
         return True
 
-    def notConflictingShownCard(self, worldFrom: str, worldTo: str, turn: int):
-        for atom in worldFrom.split():
-            if atom[5:] == str(turn):
-                for atom2 in worldTo.split():
-                    if atom2[5:] == str(turn) and atom2[1:2] != atom[1:2]:
-                        return False
-        return True
-
     def agentResponds(self, agent: str, question: Question, turn: int) -> None:
         agents = self.ks.relations.keys()
         
