@@ -5,9 +5,9 @@ from models.mlsolver.formula import Atom, Not
 import random
 
 class Player(Agent):
-    def __init__(self: Agent, agent_name: str, model) -> Agent:
-
-        super().__init__(agent_name, model)
+    def __init__(self: Agent, agent_name: str, high_order: bool) -> Agent:
+        super().__init__(agent_name)
+        self.high_order = high_order
         self.knowledge_base = []
         self.weapons = []
         self.rooms = []
@@ -24,7 +24,7 @@ class Player(Agent):
             self.people.append(person)
             self.updateKnowledge(card="p"+str(person))
 
-    def updateKnowledge(self: Agent, card: any, smart_player: bool = False) -> None:
+    def updateKnowledge(self: Agent, card: any) -> None:
         if type(card) is str:
             self.knowledge_base.append(str(card))
             self.knowledge_base = list(set(self.knowledge_base))

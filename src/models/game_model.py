@@ -1,46 +1,43 @@
-import enum
 import sys
-from turtle import st
-from matplotlib.pyplot import streamplot
 
 import pygame
 from pygame.locals import *
 import random
 
-from mesa import Model
-from mesa.time import RandomActivation
 from tqdm import tqdm
 from models.agent_model import Player
 
 from tqdm import tqdm
 from itertools import cycle
-from models.cluedo import AgentCard, AgentShownChoice, Question
+from models.cluedo import *
 
 from models.logic_model import initializeKripke
 from models.mlsolver.kripke import KripkeStructure, World
 from models.mlsolver.formula import *
 
 
-class CluedoGameModel(Model):
+class CluedoGameModel():
 
-    def __init__(self: Model, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> Model:
+    def __init__(self, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int, n_high_order: int):
         pygame.init()
         self.n_weapons = n_weapons
         self.n_people = n_people
         self.n_rooms = n_rooms
-        self.schedule = RandomActivation(self)
+        self.n_high_order = n_high_order
+        self.agents = []
         self.ks = None
         self.target_cards = {}
         self.gameInProgress = False
         self.movesHistory = []
+        self.trueWorld = CluedoWorld([])
         self.turn = -1
-        
-        for agent_name in names_agents:
-            agent = Player(agent_name, self)
-            self.schedule.add(agent)
+
+        for i, agent_name in enumerate(names_agents):
+            agent = Player(agent_name, i >= (len(names_agents) - self.n_high_order))
+            self.agents.append(agent)
 
         self.initializeLogicStructure(
-            self.schedule.agents, 
+            self.agents, 
             n_weapons, 
             n_people, 
             n_rooms
@@ -48,9 +45,10 @@ class CluedoGameModel(Model):
         self.font = pygame.font.SysFont(None, 40)
         self.fontSmall = pygame.font.SysFont(None, 20)
         self.initializeDisplay()
+        super()
 
 
-    def setCardsOnTable(self: Model, weapon: int, person: int, room: int) -> None:
+    def setCardsOnTable(self, weapon: int, person: int, room: int) -> None:
         if self.target_cards:
             print("Cards already set")
         else:    
@@ -58,36 +56,42 @@ class CluedoGameModel(Model):
             self.target_cards['person'] = person
             self.target_cards['room'] = room
 
-    def dealCards(self: Model, n_weapons: int, n_people: int, n_rooms: int) -> None:
+    def dealCards(self, n_weapons: int, n_people: int, n_rooms: int) -> None:
         weapons = list(range(0, self.n_weapons))
         people = list(range(0, self.n_people))
         rooms = list(range(0, self.n_rooms))
         weapon = random.choice(weapons)
+        self.trueWorld.atoms.append(SolAtom('w', weapon))
         person = random.choice(people)
+        self.trueWorld.atoms.append(SolAtom('p', person))
         room = random.choice(rooms)
+        self.trueWorld.atoms.append(SolAtom('r', room))
         self.setCardsOnTable(weapon, person, room)
         weapons.remove(weapon)
         people.remove(person)
         rooms.remove(room)
 
-        for agent in cycle(self.schedule.agents):
+        for agent in cycle(self.agents):
             if weapons:
                 weapon = random.choice(weapons)
                 agent.setAtributes(weapon=weapon)
+                self.trueWorld.atoms.append(AgentCard('w', weapon, str(agent)))
                 weapons.remove(weapon)
             elif people:
                 person = random.choice(people)
                 agent.setAtributes(person=person)
+                self.trueWorld.atoms.append(AgentCard('p', person, str(agent)))
                 people.remove(person)
             elif rooms:
                 room = random.choice(rooms)
                 agent.setAtributes(room=room)
+                self.trueWorld.atoms.append(AgentCard('r', room, str(agent)))
                 rooms.remove(room)
             else:
                 break
 
 
-    def initializeLogicStructure(self: Model, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> KripkeStructure:
+    def initializeLogicStructure(self, names_agents: list[str], n_weapons: int, n_people: int, n_rooms: int) -> KripkeStructure:
         self.ks = initializeKripke(
             agents=names_agents, 
             n_weapons=n_weapons, 
@@ -95,7 +99,7 @@ class CluedoGameModel(Model):
             n_rooms=n_rooms
             )
 
-    def createZones(self: Model) -> None:
+    def createZones(self) -> None:
         self.zone_gameProgress = Rect(
             self.dim_img, 
             0, 
@@ -126,9 +130,21 @@ class CluedoGameModel(Model):
             self.dim_display/2,
             100
         )
+        self.zone_gameOver = Rect(
+            20,
+            20,
+            self.dim_display - 40,
+            self.dim_display - 40
+        )
+        self.zone_quitButton = Rect(
+            self.zone_gameOver.x + self.zone_gameOver.w/2 - 40,
+            self.zone_gameOver.y + self.zone_gameOver.h/2 - 20,
+            80,
+            40
+        )
 
 
-    def drawInterface(self: Model)-> None:
+    def drawInterface(self)-> None:
         self.game_theme_color = [165, 205, 210]
         self.color_edge = [100, 150, 150]
 
@@ -150,7 +166,7 @@ class CluedoGameModel(Model):
             ((self.zone_nextButton.x + (self.zone_nextButton.w/2) - 20), (self.zone_nextButton.y + (self.zone_nextButton.h/2) - 20))
         )
     
-    def drawActions(self: Model):
+    def drawActions(self):
         self.display.fill(self.game_theme_color, self.zone_gameProgress)
         pygame.draw.rect(self.display, self.color_edge, self.zone_knowledge, 2)
         for i in range(len(self.movesHistory), 0, -1):
@@ -159,40 +175,82 @@ class CluedoGameModel(Model):
                 ((self.zone_gameProgress.x + 10), (self.zone_gameProgress.y + self.zone_gameProgress.h - 20 - (len(self.movesHistory)-i)*25))
                 )
 
-    def drawKnowledge(self: Model):
+    def drawKnowledge(self):
         self.display.fill(self.game_theme_color, self.zone_knowledge)
         pygame.draw.rect(self.display, self.color_edge, self.zone_knowledge, 2)
         self.display.blit(
             self.fontSmall.render(
                 'Knowledge cards not on table:',
                 True, [0,0,0]), 
-            ((self.zone_knowledge.w/2 +10), (self.zone_knowledge.y + 10))
+            ((self.zone_knowledge.w/2 +60), (self.zone_knowledge.y + 10))
             )
-        for i in range(len(self.schedule.agents)):
+        for i in range(len(self.agents)):
+            if self.agents[i].high_order:
+                order_string = 'high'
+            else:
+                order_string = 'first'
             self.display.blit(
                 self.fontSmall.render(
-                    'Agent "' + str(self.schedule.agents[i]) + '" worlds: ' + str(len(self.ks.worlds)),
+                    'Agent "' + str(self.agents[i]) + '" (Using '+ order_string +' order knowledge) possible solutions: ' + str(len(self.getPossibleSolutions(self.agents[i]))),
                     True, [0,0,0]), 
                 ((self.zone_knowledge.x +10), (self.zone_knowledge.y + 10 + i*25))
                 )
-            self.display.blit(
-                self.fontSmall.render(
-                    str(self.schedule.agents[i]) + ': ' + 'Function for ' + str(len(self.ks.relations[str(self.schedule.agents[i])])) + ' relations',
-                    True, [0,0,0]), 
-                ((self.zone_knowledge.x + 175), (self.zone_knowledge.y + 10 + i*25))
-                )
             for_print = ''
-            for card in self.schedule.agents[i].knowledge_base:
+            for card in self.agents[i].knowledge_base:
                 if card not in for_print:
                     for_print += (card + ', ')
             self.display.blit(
                 self.fontSmall.render(
-                    str(self.schedule.agents[i]) + ': ' + for_print[:-1],
+                    str(self.agents[i]) + ': ' + for_print[:-1],
                     True, [0,0,0]), 
-                ((self.zone_knowledge.w/2 + 10), (self.zone_knowledge.y + 10 + (i+1)*25))
+                ((self.zone_knowledge.w/2 + 60), (self.zone_knowledge.y + 10 + (i+1)*25))
                 )
+        self.display.blit(
+            self.fontSmall.render(
+                'Correct world: ' + self.trueWorld.noTurnAtoms(),
+                True, [0,0,0]), 
+            ((self.zone_knowledge.x +10), (self.zone_knowledge.y - 25 + self.zone_knowledge.h))
+            )
 
-    def initializeDisplay(self: Model):
+    def drawGameOver(self, winning_agent: str, weapon: str, person: str, room: str):
+        self.display.fill(self.game_theme_color)
+        pygame.draw.rect(self.display, self.color_edge, self.zone_gameOver, 10)
+        self.display.blit(
+            self.font.render(
+                'Game Ended',
+                True, [0,0,0]), 
+            ((self.zone_gameOver.x + self.zone_gameOver.w/2 - 80), (self.zone_gameOver.y + 30))
+            )
+        self.display.blit(
+            self.fontSmall.render(
+                'Cards on Table: w' + 
+                str(self.target_cards['weapon']) + ' p' + 
+                str(self.target_cards['person'])+ ' r' +
+                str(self.target_cards['room']),
+                True, [0,0,0]), 
+            ((self.zone_gameOver.x +self.zone_gameOver.w/2 - 70), (self.zone_gameOver.y + 80))
+            )
+
+        self.display.blit(
+            self.fontSmall.render(
+                'Agent ' + str(winning_agent) + 
+                ' chose the following cards: ' + 
+                weapon + ' ' + 
+                person + ' ' +
+                room,
+                True, [0,0,0]), 
+            ((self.zone_gameOver.x +self.zone_gameOver.w/2 - 125), (self.zone_gameOver.y + 120))
+            )
+
+        pygame.draw.rect(self.display, self.color_edge, self.zone_quitButton, 2)
+        self.display.blit(
+            self.font.render(
+                'Quit',
+                True, [0,0,0]), 
+            ((self.zone_quitButton.x + 10), (self.zone_quitButton.y + 8))
+            )
+
+    def initializeDisplay(self):
         pygame.mouse.set_visible
         self.mouse = {'click': -1, 'coordinates': (0,0)}
 
@@ -209,7 +267,7 @@ class CluedoGameModel(Model):
         self.createZones()
         self.drawInterface()
 
-    def agentSaysNo(self: Model, agent: str, question: Question) -> None:
+    def agentSaysNo(self, agent: str, question: Question) -> None:
         for world in tqdm(self.ks.worlds):
             keys = world.assignment.keys()
             if (str(AgentCard('w', question.weapon, agent)) in keys or 
@@ -217,13 +275,13 @@ class CluedoGameModel(Model):
                     str(AgentCard('r', question.room, agent)) in keys):
                 self.ks.remove_node_by_name(world.name)
 
-    def agentShownPossibleWorld(self: Model, agent: str, shownAtom: str, possibleWorld: str):
+    def agentShownPossibleWorld(self, agent: str, shownAtom: str, possibleWorld: str):
         for possAtom in possibleWorld.split():
             if possAtom[:-2] != agent and possAtom[-2:] == shownAtom:
                 return False
         return True
 
-    def notConflictingShownCard(self: Model, worldFrom: str, worldTo: str, turn: int):
+    def notConflictingShownCard(self, worldFrom: str, worldTo: str, turn: int):
         for atom in worldFrom.split():
             if atom[5:] == str(turn):
                 for atom2 in worldTo.split():
@@ -231,7 +289,7 @@ class CluedoGameModel(Model):
                         return False
         return True
 
-    def agentResponds(self: Model, agent: str, question: Question, turn: int) -> None:
+    def agentResponds(self, agent: str, question: Question, turn: int) -> None:
         agents = self.ks.relations.keys()
         
         for world in tqdm(self.ks.worlds.copy()):
@@ -284,15 +342,52 @@ class CluedoGameModel(Model):
                 
                 self.ks.relations = newRelation
 
-                # newRelation = {}
-                # for oneAgent in agents:
-                #     newRelation[oneAgent] = []
-                #     for (worldFrom, worldTo) in self.ks.relations[oneAgent]:
-                #         if self.notConflictingShownCard(worldFrom, worldTo, turn):
-                #             newRelation[oneAgent].append((worldFrom, worldTo))
-                # self.ks.relations = newRelation
+    def getPossibleSolutions(self, agent: Player) -> set:
+        worlds = set([])
 
-    def checkZone(self: Model, zone: Rect) -> bool:
+        if agent.high_order:
+            for (worldFrom, worldTo) in self.ks.relations[str(agent)]:
+                if worldFrom == str(self.trueWorld):
+                    worlds.add((worldTo[:8]))
+            return worlds
+
+        weapons = list(range(0, self.n_weapons))
+        people = list(range(0, self.n_people))
+        rooms = list(range(0, self.n_rooms))
+        for atom in agent.knowledge_base:
+            if atom[0] == 'w':
+                weapons.remove(int(atom[1]))
+            if atom[0] == 'p':
+                people.remove(int(atom[1]))
+            if atom[0] == 'r':
+                rooms.remove(int(atom[1]))
+
+        for weapon in weapons:
+            for person in people:
+                for room in rooms:
+                    worlds.add(str(CluedoWorld(['w'+str(weapon), 'p'+str(person), 'r'+str(room)])))
+        
+        return worlds
+
+    def removeAgent(self, remove_agent: str):
+        for agent in self.agents:
+            if str(agent) == remove_agent:
+                self.agents.remove(agent)
+                for a1 in self.agents:
+                    print(str(a1))
+
+    def checkGameOver(self, agent: str, weapon: str, person: str, room: str):
+        self.movesHistory.append('Agent ' + agent + ' acuses cards: ' + weapon + ' ' + person + ' ' + room)
+        if weapon == 'w' + str(self.target_cards['weapon']) and \
+             person == 'p' + str(self.target_cards['person']) and \
+                 room == 'r' + str(self.target_cards['room']):
+                 self.gameInProgress = -1
+                 self.drawGameOver(agent, weapon, person, room)
+        else:
+            self.movesHistory.append('Agent ' + agent + ' is wrong and removed')
+            self.removeAgent(agent)
+
+    def checkZone(self, zone: Rect) -> bool:
         if (self.mouse['click'] == 1) and \
             (
                 (zone.x <= self.mouse['coordinates'][0] <= zone.x + zone.w) and \
@@ -302,30 +397,31 @@ class CluedoGameModel(Model):
         else:
             return False
 
-    def clickCheck(self: Model) -> bool:
-        if self.checkZone(self.zone_playButton) and not self.gameInProgress:
-            self.gameInProgress = True
+    def clickCheck(self) -> bool:
+        if self.checkZone(self.zone_quitButton) and self.gameInProgress == -1:
+            pygame.quit()
+            sys.exit()
+        if self.checkZone(self.zone_playButton) and self.gameInProgress == 0:
+            self.gameInProgress = 1
             print('The Game starts now!')
             self.movesHistory.append('Game Initialized')
             self.movesHistory.append('Cards dealt')
             return True
-        if self.checkZone(self.zone_nextButton) and self.gameInProgress:
+        if self.checkZone(self.zone_nextButton) and self.gameInProgress == 1:
             print('Next move!')
             return True
 
 
-# TODO: change this function
-    def parse_events(self, event_handle):
-        # Handle input events
-        for event in event_handle:
-            if event.type == QUIT:
+    def checkInterfaceAction(self, interface_actions):
+        for action in interface_actions:
+            if action.type == QUIT:
                 pygame.quit()
                 sys.exit()
             else:
                 try:
-                    self.mouse['coordinates'] = event.dict['pos']
+                    self.mouse['coordinates'] = action.dict['pos']
                 except:
                     self.mouse['coordinates'] = (0,0)
-                if event.type == MOUSEBUTTONDOWN:
-                    if event.dict['button'] == 1:
+                if action.type == MOUSEBUTTONDOWN:
+                    if action.dict['button'] == 1:
                         self.mouse['click'] = 1
