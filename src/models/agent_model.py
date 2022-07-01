@@ -14,15 +14,17 @@ class Player(Agent):
         self.rooms = []
         self.people = []
 
-    # Following function transforms the cards in the correct format to be added in the knowledge base
+    # Sets intial cards dealt for each agent and updates the agent's first order knowledge base, based on those cards
     def setAtributes(self: Agent, weapon: int = None, person: int = None, room: int = None) -> None:
-        if weapon != None:
+        if weapon != None:# Agent receives initial weapon and updates first order knowledge
             self.weapons.append(weapon)
             self.updateKnowledge(card="w"+str(weapon))
-        if room != None:
+        
+        if room != None:# Agent receives intial room and updates first order knowledge
             self.rooms.append(room)
             self.updateKnowledge(card="r"+str(room))
-        if person != None:
+        
+        if person != None:# Agent receives intial person and updates first order knowledge
             self.people.append(person)
             self.updateKnowledge(card="p"+str(person))
 

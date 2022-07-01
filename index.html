@@ -512,23 +512,152 @@ http://www.templatemo.com/tm-514-magazee
     </section>
 
 
-    <!-- 7th section -->
-
     <section class="row tm-section tm-col-md-reverse">
-      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
-        <div class="tm-flex-center p-5 tm-bg-color-white">
-          <div class="tm-md-flex-center">
-            <h2 class="tm-text-color-primary mb-4">The Software Implementation</h2>
-            <p class="mb-4"> MESA is used for the MAS aspect of this project, as well as MLSolver for building and
-              updating the Kripke model.
-              <br><br>
-              All source files can be found in <a href="https://github.com/LAMAS-Cluedo/LAMAS-Cluedo.github.io">this repository</a>.
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
+        <div class="tm-flex-center p-5 tm-bg-color-primary">
+          <div class="tm-md-flex-center tm-text-color-white">
+            <h1>Results</h1>
+            <br>
+            <p class="mb-4">To investigate the research question, an experimental setup was devised. Eight full games
+              were simulated, each with 4 agents (2 1st order, 2 high order), 3 weapons, 3 people and 4 rooms. After
+              each turn, the number of possible solutions each agent considers possible was recorded. At the end of the
+              game, the winning agnet was recorded.
+              <br>
+              In each game, the first order knowledge agents played first. It is worth noting that since there are 7
+              cards distributed amongst 4 players, an agent would have to start with a single card. That agent was
+              chosen to be the last player, who also happens to be a higher order knowledge player.
             </p>
           </div>
         </div>
       </div>
     </section>
 
+
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="tm-flex-center p-5">
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-primary mb-4">Effect of High Order Knowledge on Win-rate</h2>
+            <p class="mb-4">The adjacent barplot presents the average win rate of each agent type, along with the
+              corresponding error bars (standard error was used, but since they won all games, the Standard Error is 0).
+              As it can be clearly seen, agents that use higher order knowledge outperformed 1st order knowledge agents.
+            </p>.
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 p-0">
+        <div class="tm-flex-center p-0 tm-bg-color-white">
+          <div class="tm-max-w-300 tm-flex-center tm-flex-col">
+            <img src="img/winRate.jpg" alt="Image" class="img-fluid">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="tm-flex-center p-0 tm-bg-color-white">
+          <div class="tm-md-flex-center">
+            <img src="img/possibleSolutions.jpg" alt="Image" class="img-fluid">
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 p-0">
+        <div class="tm-flex-center p-0 tm-bg-color-white">
+          <div class="tm-max-w-300 tm-flex-center tm-flex-col">
+            <h2 class="tm-text-color-primary mb-4">Effect of High Order Knowledge on number of possible worlds
+              considered</h2>
+            <p class="mb-4">The adjacent graph presents how the number of considered possible solutions changes
+              for 1st and higher-order agents during a game. The error bars represent Standard Deviation. The findings
+              strongly suggest that the number of possible solutions declines signifantly faster for agents that use
+              higher-order knowledge. This advantage can especially be seen after the 3rd turn, when the first higher
+              order agent plays their first round.
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
+        <div class="tm-flex-center p-5 tm-bg-color-primary">
+          <div class="tm-md-flex-center tm-text-color-white">
+            <h1>Conclusion, Discussion & Future Research</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-white">
+        <div class="tm-flex-center p-5 tm-bg-color-white">
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-primary mb-4">Conclusions</h2>
+            <p class="mb-4">
+              At the start of this project, we set out to answer the research question "How is the win-rate and
+              knowledge base of an agent affected by their use of higher order knowledge?".
+              <br>
+              Starting with the first part of the research question, we can conclude that agents that utilise higher
+              order knowledge are more successful in the game. In fact, compared to the current implementation of 1st
+              order knowledge agents, they remained undefeated.
+              <br>
+              Moreover, it is was seen that the knowledge base of higher order knowledge agents is more quickly reduced,
+              leading them to win the game earlier. This was especially clear when higher order knowledge players played
+              their first round.
+            </p>
+            <h2 class="tm-text-color-primary mb-4">Discussion</h2>
+            <p class="mb-4">
+              The aforementioned conclusions are unsurprising to a large extent. Agents using higher order knowledge can
+              not only make better inferences, but can also consequently ask more relevant questions (as they have more
+              knowledge). It is quite interesting that even though higher order knowledge agents play last, they still
+              always win the games. Lastly, the superiority of higher order knowledge agents is also highlighted by the
+              fact that even the agent starting with only 1 card (instead of 2) outperformed 1st order knowledge agents.
+              <br>
+              An important limitation of this research is its small focus. Due to the time required to run each
+              simulation, we were not able to simulate games similar to real Cluedo games. In the end, we chose the
+              values for our parameters such that there is a good balance between copmutational complexity and
+              efficiency.
+              <br>
+              Looking back at the requirements set out at the start of the project (3rd section of this site), we
+              managed to fully implement all "must have" and "should have" requirements. When it comes to the "could
+              have" requirements, a basic UI was implemented as well as an elementary access to the Kripke model. Both
+              of these aspects can definitely be improved further. The remainder of the "could have" requirements are
+              good ideas to extend the program, but due to the lack of time and limited added value (as they do not help
+              in answering the research question) we decided to not implement them.
+            </p>
+            <h2 class="tm-text-color-primary mb-4">Future Research</h2>
+            <p class="mb-4">
+              Even though this is a fairly independent project, it still has some fruitful roots for future research.
+              <br>
+              First, as was briefly touched upon earlier, an advantage of higher-order knowledge agents is the fact that
+              they can ask more relevant questions. By extension, it is interesting to analyse how the performance
+              (measure in number of possible solutions being considered) of higher order knowledge agents changes
+              depending on the number of higher order knowledge agents participating in the game.
+              <br>
+              Another idea for future research is the comparison of the performance of 1st order knowledge agents that
+              have the ability to guess when they are uncertain, versus higher order knowledge players that only make an
+              accusation when they are certain of the solution. In this way, for example, if a 1st order knowledge agent
+              is only 50% sure of the solution, they can accuse with 50% certainty, as waiting for a full round might be
+              risky in case a higher order knowledge agent is closing in on the answer.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
+        <div class="tm-flex-center p-5 tm-bg-color-primary">
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-white mb-4">The Software Implementation</h2>
+            <p class="mb-4 tm-text-color-white"> MESA is used for the MAS aspect of this project, as well as MLSolver
+              for building and
+              updating the Kripke model. All source files can be found in <a
+                href="https://github.com/LAMAS-Cluedo/LAMAS-Cluedo.github.io">this repository</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
 
     <!-- Footer -->
