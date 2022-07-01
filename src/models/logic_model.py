@@ -6,9 +6,13 @@ from models.mlsolver.kripke import *
 from models.mlsolver.formula import *
 from models.cluedo import *
 
-
 def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
-  if 0 == len(weapons) + len(people) + len(rooms):
+  """
+  Recursive function to generate all possible worlds based on all orders the cards can be
+  dealt out
+  """
+
+  if 0 == len(weapons) + len(people) + len(rooms): # All cards have been dealt
     assignment = {}
     for i_atom in range(0, len(dealt)):
       assignment[str(dealt[i_atom])] = True
@@ -17,9 +21,9 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
 
   worlds = []
 
-  if type == 'w':
+  if type == 'w': 
 
-    if nextAgent < 0:
+    if nextAgent < 0: # Dealing weapon to middle
       for weapon in weapons:
         weapons.remove(weapon)
         dealt.append(SolAtom('w', weapon))
@@ -28,7 +32,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         dealt.pop()
       return worlds
 
-    else:
+    else: # Dealing weapons to players
       if len(weapons) == 1:
         nextType = 'p'
       else:
@@ -44,7 +48,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
 
   if type == 'p':
 
-    if nextAgent < 0:
+    if nextAgent < 0: # Dealing person to middle
       for person in people:
         people.remove(person)
         dealt.append(SolAtom('p', person))
@@ -53,7 +57,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         dealt.pop()
       return worlds
 
-    else:
+    else: # Dealing people to players
       if len(people) == 1:
         nextType = 'r'
       else:
@@ -69,7 +73,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
 
   if type == 'r':
 
-    if nextAgent < 0:
+    if nextAgent < 0: # Dealing room to middle
       for room in rooms:
         rooms.remove(room)
         dealt.append(SolAtom('r', room))
@@ -78,7 +82,7 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         dealt.pop()
       return worlds
 
-    else:
+    else: # Dealing rooms to players
       if len(people) == 1:
         nextType = 'w'
       else:
@@ -92,23 +96,23 @@ def buildWorlds(weapons, people, rooms, agents, type, nextAgent, dealt):
         dealt.pop()
       return worlds
 
-
+# Check if, given a certain world, a given agent would consider another world possible
 def isPossWorld(world, possWorld, agent):
   for atom in world.assignment.keys():
-    if atom[:-2] == agent.unique_id:
+    if atom[:-2] == agent.unique_id: # Only check using this agent's cards
       possAtoms = possWorld.assignment.keys()
-      if atom not in possAtoms:
+      if atom not in possAtoms: # If the agent does not have the same card in the other world then not possible
         return False
       for possAtom in possAtoms:
         if possAtom[:-2] != agent.unique_id and possAtom[-2:] == atom[-2:]:
           return False
   return True
 
-
+# Generate all accessibility relations from a given world for a given agent
 def buildRelationsFromWorld(world, worlds, agent):
   return [(world.name, possWorld.name) for possWorld in worlds if isPossWorld(world, possWorld, agent)]
 
-
+# Load an existing initial kripke structure from a file
 def loadStructure(ks_name):
   print("~~~\nLoading " + ks_name + '\n~~~')
 
@@ -116,7 +120,7 @@ def loadStructure(ks_name):
     kripke_structure = pickle.load(modelFile)
   return kripke_structure
 
-
+# Save an inital kripke structure to a file
 def saveStructure(kripke_structure, ks_name):
   print('~~~\nSaving Kripke Structure with name: ' + ks_name + '\n~~~')
 
@@ -124,7 +128,8 @@ def saveStructure(kripke_structure, ks_name):
   with open(filename, 'wb') as modelFile:
     pickle.dump(kripke_structure, modelFile)
 
-
+# Initialise the kripke structure at the start of a game of Cluedo (after the cards are dealt).
+# Will use a file if one exists and will otherwise generate the structure and save it to a file
 def initializeKripke(agents = listAgents(3), n_weapons=3, n_people=3, n_rooms=3):
   ks_name ='CluedoModel_a=' + str(len(agents)) + '_w=' + str(n_weapons) + '_p=' + str(n_people) + '_r=' + str(n_rooms) + '.pkl'
 
