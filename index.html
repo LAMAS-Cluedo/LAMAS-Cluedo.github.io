@@ -512,6 +512,71 @@ http://www.templatemo.com/tm-514-magazee
     </section>
 
 
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-12 tm-bg-color-primary">
+        <div class="tm-flex-center p-5 tm-bg-color-primary">
+          <div class="tm-md-flex-center tm-text-color-white">
+            <h1>Results, Conclusion & Discussion</h1>
+            <br>
+            <p class="mb-4">To investigate the research question, an experimental setup was devised. Eight full games
+              were simulated, each with 4 agents (2 1st order, 2 high order), 3 weapons, 3 people and 4 rooms. After
+              each turn, the number of possible solutions each agent considers possible was recorded. At the end of the
+              game, the winning agnet was recorded.
+              <br>
+              In each game, the first order knowledge agents played first. It is worth noting that since there are 7
+              cards distributed amongst 4 players, an agent would have to start with a single card. That agent was
+              chosen to be the last player, who also happens to be a higher order knowledge player.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="tm-flex-center p-5">
+          <div class="tm-md-flex-center">
+            <h2 class="tm-text-color-primary mb-4">Effect of High Order Knowledge on Win-rate</h2>
+            <p class="mb-4">The adjacent barplot presents the average win rate of each agent type, along with the
+              corresponding error bars (standard error was used, but since they won all games, the Standard Error is 0).
+              As it can be clearly seen, agents that use higher order knowledge outperformed 1st order knowledge agents.
+            </p>.
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 p-0">
+        <div class="tm-flex-center p-0 tm-bg-color-primary">
+          <div class="tm-max-w-300 tm-flex-center tm-flex-col">
+            <img src="img/winRate.jpg" alt="Image" class="img-fluid">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="row tm-section tm-col-md-reverse">
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="tm-flex-center p-0 tm-bg-color-primary">
+          <div class="tm-md-flex-center">
+            <img src="img/possibleSolutions.jpg" alt="Image" class="img-fluid">
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 p-0">
+        <div class="tm-flex-center p-0 tm-bg-color-white">
+          <div class="tm-max-w-300 tm-flex-center tm-flex-col">
+            <h2 class="tm-text-color-primary mb-4">Effect of High Order Knowledge on number of possible worlds
+              consdiered</h2>
+            <p class="mb-4">The adjacent graph presents how the number of considered possible solutions changes
+              for 1st and higher-order agents during a game. The error bars represent Standard Deviation. The findings
+              strongly suggest that the number of possible solutions declines signifantly faster for agents that use
+              higher-order knowledge. This advantage can especially be seen after the 3rd turn, when the first higher
+              order agent plays their first round.
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 7th section -->
 
     <section class="row tm-section tm-col-md-reverse">
@@ -520,9 +585,8 @@ http://www.templatemo.com/tm-514-magazee
           <div class="tm-md-flex-center">
             <h2 class="tm-text-color-primary mb-4">The Software Implementation</h2>
             <p class="mb-4"> MESA is used for the MAS aspect of this project, as well as MLSolver for building and
-              updating the Kripke model.
-              <br><br>
-              All source files can be found in <a href="https://github.com/LAMAS-Cluedo/LAMAS-Cluedo.github.io">this repository</a>.
+              updating the Kripke model. All source files can be found in <a
+                href="https://github.com/LAMAS-Cluedo/LAMAS-Cluedo.github.io">this repository</a>.
             </p>
           </div>
         </div>
