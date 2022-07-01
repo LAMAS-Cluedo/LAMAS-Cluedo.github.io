@@ -1,12 +1,12 @@
 from typing import Any
-from mesa import Agent
+from mesa import Agent, Model
 from models.cluedo import Question
 from models.mlsolver.formula import Atom, Not
 import random
 
 class Player(Agent):
-    def __init__(self: Agent, agent_name: str, high_order: bool) -> Agent:
-        super().__init__(agent_name)
+    def __init__(self: Agent, agent_name: str, model: Model, high_order: bool) -> Agent:
+        super().__init__(agent_name, model)
         self.high_order = high_order
         self.knowledge_base = []
         self.weapons = []

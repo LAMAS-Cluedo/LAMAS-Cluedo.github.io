@@ -80,11 +80,11 @@ def decideRandomQuestion(model: CluedoGameModel, current_agent: Player) -> list:
         room = random.choice(list(range(0, model.n_rooms)))
     return ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
 
-def decideQuestionWithKnowledge(model: CluedoGameModel, current_agent: Player):
+def decideQuestionWithKnowledge(model: CluedoGameModel, current_agent: Player, possible_solutions: list):
     weapons = set(range(0, model.n_weapons))
     people = set(range(0, model.n_people))
     rooms = set(range(0, model.n_rooms))
-    for possibilities in model.getPossibleSolutions(current_agent):
+    for possibilities in possible_solutions:
         possibilitiesSplit = possibilities.split()
         weapons = weapons.difference({int(possibilitiesSplit[0][1])})
         people = people.difference({int(possibilitiesSplit[1][1])})
@@ -98,21 +98,25 @@ def decideQuestionWithKnowledge(model: CluedoGameModel, current_agent: Player):
     return ['w' + str(weapon), 'p' + str(person), 'r' + str(room)]
 
 def nextMove(model: CluedoGameModel, current_agent: Player, base_on_knowledge: bool):
-    if base_on_knowledge:
-        cards = decideQuestionWithKnowledge(model, current_agent)
-    else:
-        cards = decideRandomQuestion(model, current_agent)
+    possible_solutions = model.getPossibleSolutions(current_agent)
 
-    if model.turn > -1:
-        model.movesHistory.append('Turn ' + str(model.turn) + ': Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
-        cards_showed = askForCards(current_agent, model.agents, cards, model)
-        if (len(cards_showed) == 0):
-            model.movesHistory.append('No agents responded')
-        model.movesHistory += cards_showed
-        # model.movesHistory.append('Next Move')# delete when actions implemented
-        model.drawKnowledge()
-        model.drawActions()
+    if len(possible_solutions) == 1:
+        cards = list(possible_solutions)[0].split()
+        model.checkGameOver(str(current_agent), cards[0], cards[1], cards[2])
+
     else:
+        if base_on_knowledge:
+            cards = decideQuestionWithKnowledge(model, current_agent, possible_solutions)
+        else:
+            cards = decideRandomQuestion(model, current_agent)
+
+        if model.turn > -1:
+            model.movesHistory.append('Turn ' + str(model.turn) + ': Agent ' + str(current_agent) + ' asks for cards: ' + cards[0] + ' ' + cards[1] + ' ' + cards[2])
+            cards_showed = askForCards(current_agent, model.agents, cards, model)
+            if (len(cards_showed) == 0):
+                model.movesHistory.append('No agents responded')
+            model.movesHistory += cards_showed
+
         model.drawKnowledge()
         model.drawActions()
 
